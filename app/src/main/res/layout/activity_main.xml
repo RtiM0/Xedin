@@ -7,29 +7,13 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <GridView
-        android:id="@+id/pop_movies_grid"
-        android:gravity="center_horizontal"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:columnWidth="200dp"
-        android:numColumns="auto_fit"
-        />
-    <ProgressBar
-        android:id="@+id/indeterminateBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/pop_movies_grid"
-        app:layout_constraintEnd_toEndOf="@+id/pop_movies_grid"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/pop_movies_grid"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context=".MainActivity"
+        tools:showIn="@layout/activity_main" />
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"

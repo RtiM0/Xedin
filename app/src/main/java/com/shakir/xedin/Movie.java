@@ -1,49 +1,24 @@
 package com.shakir.xedin;
 
-import java.io.Serializable;
+import com.google.gson.annotations.SerializedName;
 
-public class Movie implements Serializable {
-    private int id;
-    private  int voteAverage;
-    private int voteCount;
-    private String originalTitle;
+import java.util.List;
+
+public class Movie {
+    public static final String TMDB_IMAGE_PATH = "http://image.tmdb.org/t/p/w500";
+
     private String title;
-    private double popularity;
-    private String backdropPath;
-    private String overview;
-    private String releaseDate;
-    private String posterPath;
 
-    public int getId() {
-        return id;
-    }
+    @SerializedName("poster_path")
+    private String poster;
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    @SerializedName("overview")
+    private String description;
 
-    public int getVoteAverage() {
-        return voteAverage;
-    }
+    @SerializedName("backdrop_path")
+    private String backdrop;
 
-    public void setVoteAverage(int voteAverage) {
-        this.voteAverage = voteAverage;
-    }
-
-    public int getVoteCount() {
-        return voteCount;
-    }
-
-    public void setVoteCount(int voteCount) {
-        this.voteCount = voteCount;
-    }
-
-    public String getOriginalTitle() {
-        return originalTitle;
-    }
-
-    public void setOriginalTitle(String originalTitle) {
-        this.originalTitle = originalTitle;
+    public Movie() {
     }
 
     public String getTitle() {
@@ -54,43 +29,35 @@ public class Movie implements Serializable {
         this.title = title;
     }
 
-    public double getPopularity() {
-        return popularity;
+    public String getPoster() {
+        return TMDB_IMAGE_PATH + poster;
     }
 
-    public void setPopularity(double popularity) {
-        this.popularity = popularity;
+    public void setPoster(String poster) {
+        this.poster = poster;
     }
 
-    public String getBackdropPath() {
-        return backdropPath;
+    public String getDescription() {
+        return description;
     }
 
-    public void setBackdropPath(String backdropPath) {
-        this.backdropPath = backdropPath;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getOverview() {
-        return overview;
+    public String getBackdrop() {
+        return TMDB_IMAGE_PATH + backdrop;
     }
 
-    public void setOverview(String overview) {
-        this.overview = overview;
+    public void setBackdrop(String backdrop) {
+        this.backdrop = backdrop;
     }
 
-    public String getReleaseDate() {
-        return releaseDate;
-    }
+    public static class MovieResult {
+        private List<Movie> results;
 
-    public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
-    }
-
-    public String getPosterPath() {
-        return posterPath;
-    }
-
-    public void setPosterPath(String posterPath) {
-        this.posterPath = posterPath;
+        public List<Movie> getResults() {
+            return results;
+        }
     }
 }
