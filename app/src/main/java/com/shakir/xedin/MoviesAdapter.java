@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -32,12 +34,19 @@ public class MoviesAdapter extends RecyclerView.Adapter<MovieViewHolder> {
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
         Movie movie = mMovieList.get(position);
-
+        final int pos = position + 1;
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, "Item " + pos, Toast.LENGTH_SHORT).show();
+            }
+        });
         // This is how we use Picasso to load images from the internet.
         Picasso.with(mContext)
                 .load(movie.getPoster())
                 .placeholder(R.color.colorAccent)
                 .into(holder.imageView);
+
     }
 
     @Override

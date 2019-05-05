@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
 
@@ -29,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private MoviesAdapter mAdapter;
+    //ProgressBar mProgressBar;
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -52,22 +55,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        //mProgressBar = findViewById(R.id.indeterminateBar);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         mAdapter = new MoviesAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.getLayoutManager().setMeasurementCacheEnabled(false);
         List<Movie> movies = new ArrayList<>();
-
         for (int i = 0; i < 25; i++) {
             movies.add(new Movie());
         }
+        //mProgressBar.setVisibility(View.VISIBLE);
         mAdapter.setMovieList(movies);
-
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("http://api.themoviedb.org/3")
                 .setRequestInterceptor(new RequestInterceptor() {
                     @Override
                     public void intercept(RequestInterceptor.RequestFacade request) {
-                        request.addEncodedQueryParam("api_key", "aa83b59842709a91c2855a4dbf200f79");
+                        request.addEncodedQueryParam("api_key", BuildConfig.API_KEY);
                     }
                 })
                 .setLogLevel(RestAdapter.LogLevel.FULL)
@@ -77,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void success(MovieResult movieResult, Response response) {
                 mAdapter.setMovieList(movieResult.getResults());
+                //mProgressBar.setVisibility(View.INVISIBLE);
             }
 
             @Override
