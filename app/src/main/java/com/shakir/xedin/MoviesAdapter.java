@@ -1,12 +1,11 @@
 package com.shakir.xedin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -32,21 +31,32 @@ public class MoviesAdapter extends RecyclerView.Adapter<MovieViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(MovieViewHolder holder, int position) {
+    public void onBindViewHolder(final MovieViewHolder holder, final int position) {
         Movie movie = mMovieList.get(position);
-        final int pos = position + 1;
+        final String poster = movie.getPoster();
+        final String title = movie.getTitle();
+        final String backdrop = movie.getBackdrop();
+        final String desc = movie.getDescription();
+        final String tvname = movie.getName();
+        final int tmdbid = movie.getId();
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, "Item " + pos, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(mContext, InfoPage.class);
+                intent.putExtra("title", title);
+                intent.putExtra("poster", poster);
+                intent.putExtra("backdrop", backdrop);
+                intent.putExtra("desc", desc);
+                intent.putExtra("tmdbid", tmdbid);
+                intent.putExtra("tvname", tvname);
+                mContext.startActivity(intent);
             }
         });
         // This is how we use Picasso to load images from the internet.
-        Picasso.with(mContext)
+        Picasso.get()
                 .load(movie.getPoster())
-                .placeholder(R.color.colorAccent)
+                .placeholder(R.drawable.image_placeholder)
                 .into(holder.imageView);
-
     }
 
     @Override

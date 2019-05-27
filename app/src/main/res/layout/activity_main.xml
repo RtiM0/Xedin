@@ -2,7 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
+    android:id="@+id/ber"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
@@ -16,11 +16,38 @@
         tools:context=".MainActivity"
         tools:showIn="@layout/activity_main" />
         -->
+    <LinearLayout
+        android:id="@+id/search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:weightSum="10"
+        app:layout_constraintTop_toTopOf="@id/recyclerView">
+
+        <EditText
+            android:id="@+id/searcher"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:background="@android:color/background_light"
+            android:hint="Movie Name"
+            android:inputType="textAutoComplete" />
+
+        <Button
+            android:id="@+id/switcher"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="TV" />
+    </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="@id/navigation"></android.support.v7.widget.RecyclerView>
+        app:layout_constraintTop_toBottomOf="@+id/search"
+        app:layout_constraintTop_toTopOf="@id/navigation" />
     <!--<ProgressBar
         android:id="@+id/indeterminateBar"
         android:layout_width="wrap_content"

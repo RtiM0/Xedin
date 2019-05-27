@@ -1,119 +1,194 @@
 package com.shakir.xedin;
 
-import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
+import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link InfoPage.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link InfoPage#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class InfoPage extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class InfoPage extends AppCompatActivity {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private TextView title1;
-    private ImageView backdrop;
+    private RelativeLayout backs;
+    private TextView tet;
+    private ImageView backd;
+    private ImageView post;
     private TextView disc;
-
-    private OnFragmentInteractionListener mListener;
-
-    public InfoPage() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment InfoPage.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static InfoPage newInstance(String param1, String param2) {
-        InfoPage fragment = new InfoPage();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private Button play;
+    private EditText season;
+    private EditText episode;
+    private Button alternate;
+    private Button odb;
+    private String status;
+    private int tmdbid;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_info_page, container, false);
-        title1 = v.findViewById(R.id.title1);
-        disc = v.findViewById(R.id.disc);
-        return v;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        Intent intent = getIntent();
+        String title = intent.getStringExtra("title");
+        String name = intent.getStringExtra("tvname");
+        String back = intent.getStringExtra("backdrop");
+        String desc = intent.getStringExtra("desc");
+        tmdbid = intent.getIntExtra("tmdbid", -1);
+        String poster = intent.getStringExtra("poster");
+        setContentView(R.layout.activity_info_page);
+        tet = findViewById(R.id.titel);
+        backd = findViewById(R.id.backd);
+        post = findViewById(R.id.postar);
+        disc = findViewById(R.id.description);
+        backs = findViewById(R.id.backs);
+        play = findViewById(R.id.playbutton);
+        alternate = findViewById(R.id.alternate);
+        odb = findViewById(R.id.odb);
+        season = findViewById(R.id.season);
+        episode = findViewById(R.id.episode);
+        if (name == null) {
+            tet.setText(title);
+            status = "Movie";
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+            tet.setText(name);
+            status = "TV";
+            season.setVisibility(View.VISIBLE);
+            episode.setVisibility(View.VISIBLE);
         }
+        disc.setText(desc);
+        Picasso.get()
+                .load(poster)
+                .placeholder(R.color.colorAccent)
+                .into(post);
+        Picasso.get()
+                .load(back)
+                .placeholder(R.color.colorAccent)
+                .into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        assert backd != null;
+                        backd.setImageBitmap(bitmap);
+                        Palette.from(bitmap)
+                                .generate(new Palette.PaletteAsyncListener() {
+                                    @Override
+                                    public void onGenerated(@Nullable Palette palette) {
+                                        try {
+                                            Palette.Swatch textSwatch = palette.getVibrantSwatch();
+                                            backs.setBackgroundColor(textSwatch.getRgb());
+                                            tet.setTextColor(textSwatch.getBodyTextColor());
+                                            disc.setTextColor(textSwatch.getTitleTextColor());
+                                        } catch (NullPointerException e) {
+
+                                        }
+                                    }
+                                });
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
+                });
+        if (status == "Movie") {
+            imdbSources("https://api.themoviedb.org/3/movie/" + tmdbid + "?api_key=" + BuildConfig.API_KEY);
+        } else {
+            imdbSources("http://api.themoviedb.org/3/tv/" + tmdbid + "?api_key=" + BuildConfig.API_KEY + "&append_to_response=external_ids");
+        }
+        play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String loader;
+                if (status == "TV") {
+                    loader = "https://videospider.stream/personal?key=" + BuildConfig.SPIDER_KEY + "&video_id=" + tmdbid + "&tmdb=1&tv=1&s=" + season.getText().toString() + "&e=" + episode.getText().toString();
+                } else {
+                    loader = "https://videospider.stream/personal?key=" + BuildConfig.SPIDER_KEY + "&video_id=" + tmdbid + "&tmdb=1";
+                }
+                Intent browse = new Intent(Intent.ACTION_VIEW, Uri.parse(loader));
+                startActivity(browse);
+//                Intent intent = new Intent(getApplicationContext(),Sources.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                intent.putExtra("tmdbid",tmdbid);
+//                if(status=="TV"){
+//                    intent.putExtra("status",1);
+//                    intent.putExtra("season",season.getText().toString());
+//                    intent.putExtra("episode",episode.getText().toString());
+//                }
+//                getApplicationContext().startActivity(intent);
+            }
+        });
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    void imdbSources(String url) {
+        Ion.with(getApplicationContext())
+                .load(url)
+                .asString()
+                .setCallback(new FutureCallback<String>() {
+                    @Override
+                    public void onCompleted(Exception e, String result) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(result);
+                            String imdb = "";
+                            if (status == "Movie") {
+                                imdb = jsonObject.getString("imdb_id");
+                                alternate.setVisibility(View.VISIBLE);
+                                final String finalImdb1 = imdb;
+                                alternate.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(getApplicationContext(), "Scroll Down", Toast.LENGTH_LONG).show();
+                                        Intent alternate = new Intent(Intent.ACTION_VIEW, Uri.parse("http://vplus.ucoz.com/" + finalImdb1));
+                                        startActivity(alternate);
+                                    }
+                                });
+                            } else {
+                                JSONObject object = new JSONObject(jsonObject.getString("external_ids"));
+                                imdb = object.getString("imdb_id");
+                            }
+                            odb.setVisibility(View.VISIBLE);
+                            final String finalImdb = imdb;
+                            odb.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (status == "TV") {
+                                        Intent odb = new Intent(Intent.ACTION_VIEW, Uri.parse("https://api.odb.to/embed?imdb_id=" + finalImdb + "&s=" + season.getText().toString() + "&e=" + episode.getText().toString() + "&cc=eng"));
+                                        startActivity(odb);
+                                        openURL("https://api.odb.to/embed?imdb_id=" + finalImdb + "&s=" + season.getText().toString() + "&e=" + episode.getText().toString() + "&cc=eng");
+                                    } else {
+                                        Intent odb = new Intent(Intent.ACTION_VIEW, Uri.parse("https://api.odb.to/embed?imdb_id=" + finalImdb + "&cc=eng"));
+                                        startActivity(odb);
+                                    }
+                                }
+                            });
+                        } catch (JSONException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                });
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    void openURL(String irl) {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        builder.build()
+                .launchUrl(this, Uri.parse(irl));
     }
 }

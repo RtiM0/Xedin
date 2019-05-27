@@ -8,5 +8,4 @@ public class MovieResult {
     public List<Movie> getResults() {
         return results;
     }
-
 }

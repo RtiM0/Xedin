@@ -1,5 +1,6 @@
 package com.shakir.xedin;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -7,16 +8,29 @@ import java.util.List;
 public class Movie {
     public static final String TMDB_IMAGE_PATH = "http://image.tmdb.org/t/p/w500";
 
-    private String title;
-
     @SerializedName("poster_path")
+    @Expose
     private String poster;
 
     @SerializedName("overview")
+    @Expose
     private String description;
 
     @SerializedName("backdrop_path")
+    @Expose
     private String backdrop;
+
+    @SerializedName("title")
+    @Expose
+    private String title;
+
+    @SerializedName("id")
+    @Expose
+    private int id;
+
+    @SerializedName("name")
+    @Expose
+    private String name;
 
     public Movie() {
     }
@@ -53,6 +67,22 @@ public class Movie {
         this.backdrop = backdrop;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public static class MovieResult {
         private List<Movie> results;
 
@@ -60,4 +90,5 @@ public class Movie {
             return results;
         }
     }
+
 }
