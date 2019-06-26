@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/Videospider"
+        android:title="VideoSpider" />
+    <item
+        android:id="@+id/odb"
+        android:title="ODB" />
+    <item
+        android:id="@+id/Vplus"
+        android:title="Vplus" />
+    <item
+        android:id="@+id/vidsrc"
+        android:title="VidSource" />
+
+</menu>
