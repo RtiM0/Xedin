@@ -2,16 +2,21 @@ package com.shakir.xedin;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.michaelflisar.changelog.ChangelogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
+                case R.id.navigation_library:
+                    Toast.makeText(getApplicationContext(), "Coming Soon", Toast.LENGTH_SHORT).show();
                 case R.id.navigation_home:
                     search.setVisibility(View.GONE);
                     if (flag != 1) {
@@ -73,10 +80,22 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTheme(R.style.AppTheme);
+        ActionBar actionbar = getSupportActionBar();
+        if (actionbar != null) {
+            actionbar.setDisplayOptions
+                    (ActionBar.DISPLAY_SHOW_CUSTOM);
+            actionbar.setCustomView(R.layout.action_bar);
+        }
 
+        ChangelogBuilder builder = new ChangelogBuilder()
+                .withTitle("Xedin Changelog")
+                .withOkButtonLabel("Yeah Yeah")
+                .withManagedShowOnStart(true)
+                .withUseBulletList(true);
+        builder.buildAndShowDialog(this, false);
         mRecyclerView = findViewById(R.id.recyclerView);
         searcher = findViewById(R.id.searcher);
         search = findViewById(R.id.search);
@@ -105,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
         //mProgressBar.setVisibility(View.VISIBLE);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 

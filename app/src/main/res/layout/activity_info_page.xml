@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/parental"
     android:layout_width="match_parent"
+    android:background="#363640"
     android:layout_height="match_parent"
     tools:context=".InfoPage">
 
@@ -21,7 +22,7 @@
             android:scaleType="fitXY"
             android:visibility="gone" />
 
-        <android.support.design.card.MaterialCardView
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/posta"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -34,7 +35,7 @@
                 android:id="@+id/postar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-        </android.support.design.card.MaterialCardView>
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/titel"
@@ -92,6 +93,14 @@
             android:layout_toRightOf="@id/posta"
             android:text="play" />
 
+        <Button
+            android:id="@+id/torrent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/playbutton"
+            android:layout_toRightOf="@id/posta"
+            android:text="Torrent" />
+
         <Switch
             android:id="@+id/switch1"
             android:layout_width="wrap_content"
@@ -100,15 +109,28 @@
             android:layout_toRightOf="@id/playbutton"
             android:checked="true"
             android:text="iFrame"
+            android:layout_margin="8dp"
             android:textAppearance="@android:style/TextAppearance.Medium"
             android:textOff="Browser"
             android:textOn="iFrame" />
+
+        <Switch
+            android:id="@+id/switch2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/playbutton"
+            android:layout_margin="8dp"
+            android:layout_toRightOf="@id/torrent"
+            android:checked="true"
+            android:text="Plus mode for TV"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:visibility="gone" />
     </RelativeLayout>
 
     <WebView
         android:id="@+id/player"
         android:layout_width="match_parent"
-        android:layout_height="608px"
+        android:layout_height="wrap_content"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent" />
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

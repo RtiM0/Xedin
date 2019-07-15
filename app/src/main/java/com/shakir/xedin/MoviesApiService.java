@@ -15,8 +15,5 @@ public interface MoviesApiService {
 
     @GET("/search/tv")
     void getSearchShows(Callback<MovieResult> cb);
-
-    @GET("/movie/{movie_id}")
-    void getMovieDetails();
 }
 
