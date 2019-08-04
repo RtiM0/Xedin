@@ -1,4 +1,4 @@
-package com.shakir.xedin;
+package com.shakir.xedin.models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

@@ -1,4 +1,4 @@
-package com.shakir.xedin;
+package com.shakir.xedin.activities;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -18,6 +18,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.michaelflisar.changelog.ChangelogBuilder;
+import com.shakir.xedin.BuildConfig;
+import com.shakir.xedin.R;
+import com.shakir.xedin.adapters.MoviesAdapter;
+import com.shakir.xedin.interfaces.MoviesApiService;
+import com.shakir.xedin.models.Movie;
+import com.shakir.xedin.utils.MovieResult;
 
 import java.util.ArrayList;
 import java.util.List;

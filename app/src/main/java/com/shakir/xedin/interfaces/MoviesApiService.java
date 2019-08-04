@@ -1,4 +1,6 @@
-package com.shakir.xedin;
+package com.shakir.xedin.interfaces;
+
+import com.shakir.xedin.utils.MovieResult;
 
 import retrofit.Callback;
 import retrofit.http.GET;

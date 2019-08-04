@@ -1,4 +1,4 @@
-package com.shakir.xedin;
+package com.shakir.xedin.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +8,10 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.shakir.xedin.R;
+import com.shakir.xedin.activities.InfoPage;
+import com.shakir.xedin.models.Movie;
+import com.shakir.xedin.utils.MovieViewHolder;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

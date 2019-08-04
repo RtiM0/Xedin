@@ -1,4 +1,4 @@
-package com.shakir.xedin;
+package com.shakir.xedin.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -30,6 +30,9 @@ import androidx.palette.graphics.Palette;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.shakir.xedin.BuildConfig;
+import com.shakir.xedin.R;
+import com.shakir.xedin.utils.FullScreenClient;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 

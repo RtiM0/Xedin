@@ -1,4 +1,6 @@
-package com.shakir.xedin;
+package com.shakir.xedin.utils;
+
+import com.shakir.xedin.models.Movie;
 
 import java.util.List;
 

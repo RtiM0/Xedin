@@ -15,16 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".AboutActivity"></activity>
+        <activity android:name=".activities.AboutActivity"></activity>
         <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" />
-        <activity android:name=".Sources" />
-        <activity
-            android:name=".InfoPage"
+            android:name=".activities.InfoPage"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -33,7 +29,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TorrentStreamer" />
+        <activity android:name=".activities.TorrentStreamer" />
     </application>
 
 </manifest>

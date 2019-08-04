@@ -1,4 +1,4 @@
-package com.shakir.xedin;
+package com.shakir.xedin.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -31,6 +31,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.shakir.xedin.R;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

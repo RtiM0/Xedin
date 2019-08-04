@@ -1,9 +1,11 @@
-package com.shakir.xedin;
+package com.shakir.xedin.utils;
 
 import android.view.View;
 import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.shakir.xedin.R;
 
 public class MovieViewHolder extends RecyclerView.ViewHolder {
     public ImageView imageView;
