@@ -1,5 +1,6 @@
 package com.shakir.xedin;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -86,7 +87,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                     return true;
                 case R.id.navigation_about:
-                    main.setVisibility(View.GONE);
+                    Intent about = new Intent(MainActivity.this, AboutActivity.class);
+                    MainActivity.this.startActivity(about);
                     return true;
             }
             return false;

@@ -11,7 +11,7 @@ android {
         minSdkVersion 22
         targetSdkVersion 28
         versionCode 3
-        versionName "0.9.2"
+        versionName "0.9.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "API_KEY", localProperties['apiKey']
         buildConfigField "String", "SPIDER_KEY", localProperties['spiderKey']
@@ -50,4 +50,6 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.koushikdutta.ion:ion:2.2.1'
+    implementation 'com.github.medyo:android-about-page:1.2.5'
+
 }
