@@ -21,6 +21,8 @@ import com.michaelflisar.changelog.ChangelogBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private MoviesAdapter mAdapter;
     private LinearLayout search;
+    private LinearLayout main;
     private EditText searcher;
     private Button switcher;
     private int mode = 0;
@@ -46,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navigation_library:
                     Toast.makeText(getApplicationContext(), "Coming Soon", Toast.LENGTH_SHORT).show();
                 case R.id.navigation_home:
+                    if (main.getVisibility() == View.GONE) {
+                        main.setVisibility(View.VISIBLE);
+                    }
                     search.setVisibility(View.GONE);
                     if (flag != 1) {
                         UseTheRest("movies");
@@ -53,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                     return true;
                 case R.id.navigation_dashboard:
+                    if (main.getVisibility() == View.GONE) {
+                        main.setVisibility(View.VISIBLE);
+                    }
                     search.setVisibility(View.GONE);
                     if (flag != 0) {
                         UseTheRest("tv");
@@ -60,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                     return true;
                 case R.id.navigation_notifications:
+                    if (main.getVisibility() == View.GONE) {
+                        main.setVisibility(View.VISIBLE);
+                    }
                     if (flag != 2) {
                         search.setVisibility(View.VISIBLE);
                         searcher.setText("");
@@ -72,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
                         });
                         flag = 2;
                     }
+                    return true;
+                case R.id.navigation_about:
+                    main.setVisibility(View.GONE);
                     return true;
             }
             return false;
@@ -89,21 +104,27 @@ public class MainActivity extends AppCompatActivity {
                     (ActionBar.DISPLAY_SHOW_CUSTOM);
             actionbar.setCustomView(R.layout.action_bar);
         }
+        boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+                .getBoolean("isFirstRun", true);
+        if (isFirstRun) {
+            ChangelogBuilder builder = new ChangelogBuilder()
+                    .withTitle("Xedin Changelog")
+                    .withOkButtonLabel("Yeah Yeah")
+                    .withUseBulletList(true);
+            builder.buildAndShowDialog(this, true);
+        }
+        getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
+                .putBoolean("isFirstRun", false).apply();
 
-        ChangelogBuilder builder = new ChangelogBuilder()
-                .withTitle("Xedin Changelog")
-                .withOkButtonLabel("Yeah Yeah")
-                .withManagedShowOnStart(true)
-                .withUseBulletList(true);
-        builder.buildAndShowDialog(this, false);
         mRecyclerView = findViewById(R.id.recyclerView);
         searcher = findViewById(R.id.searcher);
         search = findViewById(R.id.search);
+        main = findViewById(R.id.mained);
         switcher = findViewById(R.id.switcher);
         //mProgressBar = findViewById(R.id.indeterminateBar);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         mAdapter = new MoviesAdapter(this);
-        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(new AlphaInAnimationAdapter(new ScaleInAnimationAdapter(mAdapter)));
         mRecyclerView.getLayoutManager();
         switcher.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,7 +202,6 @@ public class MainActivity extends AppCompatActivity {
                     public void success(MovieResult movieResult, Response response) {
                         mAdapter.setMovieList(movieResult.getResults());
                         mRecyclerView.setVisibility(View.VISIBLE);
-                        search.setVisibility(View.GONE);
                     }
 
                     @Override
@@ -195,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
                     public void success(MovieResult movieResult, Response response) {
                         mAdapter.setMovieList(movieResult.getResults());
                         mRecyclerView.setVisibility(View.VISIBLE);
-                        search.setVisibility(View.GONE);
                     }
 
                     @Override

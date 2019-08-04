@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,13 +15,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.github.se_bastiaan.torrentstream.StreamStatus;
 import com.github.se_bastiaan.torrentstream.Torrent;
 import com.github.se_bastiaan.torrentstream.TorrentOptions;
@@ -41,12 +42,12 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
     private static final String TORRENT = "Torrent";
 
     private Button button;
-    private ProgressBar progressBar;
     private TorrentStream torrentStream;
     private ListView torrentsList;
     private Button button1;
     private LinearLayout infobox;
     private TextView prop;
+    private RoundCornerProgressBar progressBar;
 
     private String streamUrl = "";
     private String season = "";
@@ -66,17 +67,19 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
 
         button = findViewById(R.id.streambutton);
         progressBar = findViewById(R.id.progressBar);
+        progressBar.setProgressColor(Color.parseColor("#008080"));
+        progressBar.setProgressBackgroundColor(Color.parseColor("#808080"));
+        progressBar.setMax(100);
         TextView textView = findViewById(R.id.titler);
         TextView sub = findViewById(R.id.sub);
         torrentsList = findViewById(R.id.listof);
         button1 = findViewById(R.id.plbutton);
         infobox = findViewById(R.id.infobox);
         prop = findViewById(R.id.prop);
-
         String action = getIntent().getAction();
         String title = getIntent().getStringExtra("title");
         String imdb = getIntent().getStringExtra("imdb");
-        int tmdbid = getIntent().getIntExtra("tmdbid", -1);
+        //int tmdbid = getIntent().getIntExtra("tmdbid", -1);
         plus = getIntent().getBooleanExtra("plusmo", true);
         textView.setText(title);
         stat = getIntent().getStringExtra("status");
@@ -129,16 +132,20 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
                     .setCallback(new FutureCallback<JsonObject>() {
                         @Override
                         public void onCompleted(Exception e, JsonObject result) {
-                            JsonObject r = result.getAsJsonObject("data");
-                            JsonArray p = r.getAsJsonArray("movies");
-                            if (p != null) {
-                                JsonObject a = (JsonObject) p.get(0);
-                                yts = a.getAsJsonArray("torrents");
-                                JsonObject tor;
-                                for (int i = 0; i < yts.size(); i++) {
-                                    tor = (JsonObject) yts.get(i);
-                                    names.add("YTS " + tor.get("quality").getAsString() + " " + tor.get("type").getAsString() + "\n[SEEDS:" + tor.get("seeds").getAsInt() + " SIZE:" + tor.get("size").getAsString() + "]");
+                            try {
+                                JsonObject r = result.getAsJsonObject("data");
+                                JsonArray p = r.getAsJsonArray("movies");
+                                if (p != null) {
+                                    JsonObject a = (JsonObject) p.get(0);
+                                    yts = a.getAsJsonArray("torrents");
+                                    JsonObject tor;
+                                    for (int i = 0; i < yts.size(); i++) {
+                                        tor = (JsonObject) yts.get(i);
+                                        names.add("YTS " + tor.get("quality").getAsString() + " " + tor.get("type").getAsString() + "\n[SEEDS:" + tor.get("seeds").getAsInt() + " SIZE:" + tor.get("size").getAsString() + "]");
+                                    }
                                 }
+                            } catch (NullPointerException e1) {
+                                Toast.makeText(getApplicationContext(), "YTS not available", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -150,13 +157,17 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
                 .setCallback(new FutureCallback<JsonArray>() {
                     @Override
                     public void onCompleted(Exception e, JsonArray result) {
-                        JsonObject jo;
-                        informer = result;
-                        for (int i = 0; i < result.size(); i++) {
-                            jo = (JsonObject) result.get(i);
-                            names.add(jo.get("title").getAsString() + "\n[SEEDS:" + jo.get("seeds").getAsInt() + "]");
+                        try {
+                            JsonObject jo;
+                            informer = result;
+                            for (int i = 0; i < result.size(); i++) {
+                                jo = (JsonObject) result.get(i);
+                                names.add(jo.get("title").getAsString() + "\n[SEEDS:" + jo.get("seeds").getAsInt() + "]");
+                            }
+                            listviewbuilder();
+                        } catch (NullPointerException el) {
+                            Toast.makeText(getApplicationContext(), "No Torrents Available", Toast.LENGTH_SHORT).show();
                         }
-                        listviewbuilder();
                     }
                 });
 
@@ -201,8 +212,6 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
             torrentStream.addListener(this);
         }
 
-        progressBar.setMax(100);
-
     }
 
     private void listviewbuilder() {
@@ -246,9 +255,7 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
                 infobox.setVisibility(View.VISIBLE);
                 ready = 1;
                 torrentStream.startStream(streamUrl);
-                if (!plus && stat.equals("Movie")) {
-                    button.setText("Stop stream");
-                }
+                button.setText("Stop Stream");
             }
         });
     }
@@ -293,6 +300,8 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
     @Override
     public void onStreamError(Torrent torrent, Exception e) {
         button.setText("Start stream");
+        Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Try Again Plox", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -315,7 +324,7 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
             Log.d(TORRENT, "Progress: " + status.bufferProgress);
             progressBar.setProgress(status.bufferProgress);
         }
-        prop.setText("File Name: " + torrent.getVideoFile().getName() + "\nConnected: " + status.seeds);
+        prop.setText("File Name: " + torrent.getVideoFile().getName() + "\nConnected: " + status.seeds + "\nTotal Progress: " + Math.round(status.progress * 100.0) / 100.0 + "%");
     }
 
     @Override
