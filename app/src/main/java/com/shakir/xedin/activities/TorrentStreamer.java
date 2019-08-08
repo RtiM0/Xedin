@@ -49,6 +49,7 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
     private LinearLayout infobox;
     private TextView prop;
     private RoundCornerProgressBar progressBar;
+    private Button mag;
 
     private String streamUrl = "";
     private String season = "";
@@ -77,6 +78,7 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
         button1 = findViewById(R.id.plbutton);
         infobox = findViewById(R.id.infobox);
         prop = findViewById(R.id.prop);
+        mag = findViewById(R.id.magneter);
         String action = getIntent().getAction();
         String title = getIntent().getStringExtra("title");
         String imdb = getIntent().getStringExtra("imdb");
@@ -256,6 +258,14 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
                 infobox.setVisibility(View.VISIBLE);
                 ready = 1;
                 torrentStream.startStream(streamUrl);
+                mag.setVisibility(View.VISIBLE);
+                mag.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent magn = new Intent(Intent.ACTION_VIEW, Uri.parse(streamUrl));
+                        startActivity(magn);
+                    }
+                });
                 button.setText("Stop Stream");
             }
         });

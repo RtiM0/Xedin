@@ -1,4 +1,4 @@
-package com.shakir.xedin.utils;
+package com.shakir.xedin.models;
 
 import android.view.View;
 import android.widget.ImageView;

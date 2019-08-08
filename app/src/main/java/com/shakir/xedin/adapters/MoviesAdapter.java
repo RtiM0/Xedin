@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.shakir.xedin.R;
 import com.shakir.xedin.activities.InfoPage;
 import com.shakir.xedin.models.Movie;
-import com.shakir.xedin.utils.MovieViewHolder;
+import com.shakir.xedin.models.MovieViewHolder;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

@@ -85,6 +85,15 @@
             android:layout_margin="8dp"
             android:text="open player"
             android:visibility="gone" />
+
+        <Button
+            android:id="@+id/magneter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="8dp"
+            android:text="Magnet"
+            android:visibility="gone" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
