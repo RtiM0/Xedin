@@ -23,7 +23,7 @@ public class AboutActivity extends AppCompatActivity {
                 .setImage(R.drawable.ic_launcher_foreground)
                 .setDescription("A light application that retrieves data from TMDB, with various media streaming features")
                 .addItem(new Element().setTitle("Version 0.9.5"))
-                .addItem(new Element().setTitle("Made with <3 by Mustafa Shakir (RtiM0)"))
+//                .addItem(new Element().setTitle("Made with <3 by Mustafa Shakir (RtiM0)"))
 //                .addGroup("Connect")
 //                .addEmail("shakirmustafa58@gmail.com", "Contact Me")
 //                .addTwitter("RtiM0", "Follow me on Twitter")

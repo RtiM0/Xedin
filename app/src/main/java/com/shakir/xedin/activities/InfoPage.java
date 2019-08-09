@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -20,12 +19,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.palette.graphics.Palette;
 
 import com.google.gson.JsonObject;
@@ -39,7 +38,7 @@ import com.squareup.picasso.Target;
 
 public class InfoPage extends AppCompatActivity {
 
-    private RelativeLayout backs;
+    private ConstraintLayout parental;
     private TextView tet;
     private ImageView backd;
     private TextView disc;
@@ -71,7 +70,7 @@ public class InfoPage extends AppCompatActivity {
         backd = findViewById(R.id.backd);
         ImageView post = findViewById(R.id.postar);
         disc = findViewById(R.id.description);
-        backs = findViewById(R.id.backs);
+        RelativeLayout backs = findViewById(R.id.backs);
         play = findViewById(R.id.playbutton);
         season = findViewById(R.id.season);
         episode = findViewById(R.id.episode);
@@ -79,7 +78,7 @@ public class InfoPage extends AppCompatActivity {
         aSwitch = findViewById(R.id.switch1);
         torrents = findViewById(R.id.torrent);
         bSwitch = findViewById(R.id.switch2);
-        ScrollView parental = findViewById(R.id.parental);
+        parental = findViewById(R.id.parental);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         if (name == null) {
             tet.setText(title);
@@ -280,7 +279,7 @@ public class InfoPage extends AppCompatActivity {
         int height = (width * 9) / 16;
         webView.getLayoutParams().width = width;
         webView.getLayoutParams().height = height;
-        String s = "<iframe src=\"" + url + "\" style=\"position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;\"></iframe>";
+        String s = "<iframe src='" + url + "'/ width='" + "100%" + "' height='" + "100%" + "' frameBorder='0' allowfullscreen='true' scrolling='no' style=\"position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;\"></iframe>";
         webView.setVisibility(View.VISIBLE);
         hideSystemUI();
         webView.loadData(s, "text/html", "UTF-8");
@@ -294,34 +293,18 @@ public class InfoPage extends AppCompatActivity {
     }
 
     private void hideSystemUI() {
-        // Set the IMMERSIVE flag.
-        // Set the content to appear under the system bars so that the content
-        // doesn't resize when the system bars hide and show.
+        parental.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_FULLSCREEN);
         immersive = 1;
-        getWindow()
-                .getDecorView()
-                .setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                                | View.SYSTEM_UI_FLAG_IMMERSIVE);
-        getWindow()
-                .setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     // This snippet shows the system bars. It does this by removing all the flags
     // except for the ones that make the content appear under the system bars.
     private void showSystemUI() {
         immersive = 0;
-        getWindow()
-                .getDecorView()
-                .setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        parental.setSystemUiVisibility(View.VISIBLE);
+        webView.loadUrl("about:blank");
 
     }
 
