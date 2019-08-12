@@ -22,12 +22,13 @@ public class AboutActivity extends AppCompatActivity {
                 .isRTL(false)
                 .setImage(R.drawable.ic_launcher_foreground)
                 .setDescription("A light application that retrieves data from TMDB, with various media streaming features")
-                .addItem(new Element().setTitle("Version 0.9.5"))
+                .addItem(new Element().setTitle("Version 0.9.5a"))
 //                .addItem(new Element().setTitle("Made with <3 by Mustafa Shakir (RtiM0)"))
+//                .addItem(new Element().setTitle("This version is and can only be distributed Manish Boddhana"))
 //                .addGroup("Connect")
-//                .addEmail("shakirmustafa58@gmail.com", "Contact Me")
-//                .addTwitter("RtiM0", "Follow me on Twitter")
-//                .addGitHub("RtiM0", "Fork me on Github")
+//                .addEmail("shakirmustafa58@gmail.com", "Mail")
+//                .addTwitter("RtiM0", "Tweet")
+//                .addGitHub("RtiM0", "Github")
                 .create();
         setContentView(aboutPage);
     }
