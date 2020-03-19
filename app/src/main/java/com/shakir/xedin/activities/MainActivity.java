@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -20,12 +19,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.michaelflisar.changelog.ChangelogBuilder;
+import com.shakir.xedin.BuildConfig;
 import com.shakir.xedin.R;
 import com.shakir.xedin.adapters.MoviesAdapter;
-import com.shakir.xedin.utils.RestMovieParse;
+import com.shakir.xedin.interfaces.MoviesApiService;
+import com.shakir.xedin.models.Movie;
+import com.shakir.xedin.utils.MovieResult;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
+import retrofit.Callback;
+import retrofit.RequestInterceptor;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,24 +48,19 @@ public class MainActivity extends AppCompatActivity {
     private Button switcher;
     private int mode = 0;
 
-    RestMovieParse restMovieParse = new RestMovieParse();
-
-    //ProgressBar mProgressBar;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.navigation_library:
-                    Toast.makeText(getApplicationContext(), "Coming Soon", Toast.LENGTH_SHORT).show();
                 case R.id.navigation_home:
                     if (main.getVisibility() == View.GONE) {
                         main.setVisibility(View.VISIBLE);
                     }
                     search.setVisibility(View.GONE);
                     if (flag != 1) {
-                        restMovieParse.UseRest(mAdapter, mRecyclerView, "movie");
+                        UseRest("movie");
                         flag = 1;
                     }
                     return true;
@@ -65,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     search.setVisibility(View.GONE);
                     if (flag != 0) {
-                        restMovieParse.UseRest(mAdapter, mRecyclerView, "tv");
+                        UseRest("tv");
                         flag = 0;
                     }
                     return true;
@@ -81,9 +86,9 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 if (mode == 0) {
-                                    restMovieParse.UseRest(mAdapter, mRecyclerView, "movie", searcher.getText().toString());
+                                    UseRest("movie", searcher.getText().toString());
                                 } else {
-                                    restMovieParse.UseRest(mAdapter, mRecyclerView, "tv", searcher.getText().toString());
+                                    UseRest("tv", searcher.getText().toString());
                                 }
                             }
                         });
@@ -150,11 +155,100 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         //.setMeasurementCacheEnabled(false);
-        restMovieParse.UseRest(mAdapter, mRecyclerView, "movie");
+        UseRest("movie");
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+    }
+
+    public void UseRest(String on) {
+        List<Movie> movies = new ArrayList<>();
+        for (int i = 0; i < 25; i++) {
+            movies.add(new Movie());
+        }
+        mAdapter.setMovieList(movies);
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint("http://api.themoviedb.org/3")
+                .setRequestInterceptor(new RequestInterceptor() {
+                    @Override
+                    public void intercept(RequestFacade request) {
+                        request.addEncodedQueryParam("api_key", BuildConfig.API_KEY);
+                    }
+                })
+                .build();
+        MoviesApiService service = restAdapter.create(MoviesApiService.class);
+        if (on.equals("movie")) {
+            service.getPopularMovies(new Callback<MovieResult>() {
+                @Override
+                public void success(MovieResult movieResult, Response response) {
+                    mAdapter.setMovieList(movieResult.getResults());
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    error.printStackTrace();
+                }
+            });
+        } else {
+            service.getPopularShows(new Callback<MovieResult>() {
+                @Override
+                public void success(MovieResult movieResult, Response response) {
+                    mAdapter.setMovieList(movieResult.getResults());
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    error.printStackTrace();
+                }
+            });
+        }
+    }
+
+    public void UseRest(String on, String searchQuery) {
+        List<Movie> movies = new ArrayList<>();
+        for (int i = 0; i < 25; i++) {
+            movies.add(new Movie());
+        }
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint("http://api.themoviedb.org/3")
+                .setRequestInterceptor(new RequestInterceptor() {
+                    @Override
+                    public void intercept(RequestFacade request) {
+                        request.addEncodedQueryParam("api_key", BuildConfig.API_KEY);
+                        request.addEncodedQueryParam("query", searchQuery);
+                    }
+                })
+                .build();
+        MoviesApiService service = restAdapter.create(MoviesApiService.class);
+        if (on.equals("movie")) {
+            service.getSearchMovies(new Callback<MovieResult>() {
+                @Override
+                public void success(MovieResult movieResult, Response response) {
+                    mAdapter.setMovieList(movieResult.getResults());
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    error.printStackTrace();
+                }
+            });
+        } else {
+            service.getPopularShows(new Callback<MovieResult>() {
+                @Override
+                public void success(MovieResult movieResult, Response response) {
+                    mAdapter.setMovieList(movieResult.getResults());
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    error.printStackTrace();
+                }
+            });
+        }
     }
 }

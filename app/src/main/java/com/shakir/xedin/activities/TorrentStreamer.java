@@ -29,7 +29,6 @@ import com.github.se_bastiaan.torrentstream.TorrentStream;
 import com.github.se_bastiaan.torrentstream.listeners.TorrentListener;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.shakir.xedin.R;
 
@@ -52,12 +51,8 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
     private Button mag;
 
     private String streamUrl = "";
-    private String season = "";
-    private String episode = "";
     private String stat;
     private Boolean plus;
-    private String year = "";
-    private JsonArray informer;
     private JsonArray yts = null;
     private int ready = 0;
     private ArrayList<String> names = new ArrayList<String>();
@@ -73,106 +68,22 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
         progressBar.setProgressBackgroundColor(Color.parseColor("#808080"));
         progressBar.setMax(100);
         TextView textView = findViewById(R.id.titler);
-        TextView sub = findViewById(R.id.sub);
         torrentsList = findViewById(R.id.listof);
         button1 = findViewById(R.id.plbutton);
         infobox = findViewById(R.id.infobox);
         prop = findViewById(R.id.prop);
         mag = findViewById(R.id.magneter);
+
         String action = getIntent().getAction();
         String title = getIntent().getStringExtra("title");
         String imdb = getIntent().getStringExtra("imdb");
-        //int tmdbid = getIntent().getIntExtra("tmdbid", -1);
         plus = getIntent().getBooleanExtra("plusmo", true);
         textView.setText(title);
         stat = getIntent().getStringExtra("status");
 
-//        Ion.with(this)
-//                .load("https://api.themoviedb.org/3/movie/"+tmdbid+"?api_key="+BuildConfig.API_KEY+"&language=en-US")
-//                .asJsonObject()
-//                .setCallback(new FutureCallback<JsonObject>() {
-//                    @Override
-//                    public void onCompleted(Exception e, JsonObject result) {
-//                        year = result.get("release_date").getAsString().substring(0,4);
-//                    }
-//                });
-
-        if (stat.equals("TV")) {
-            sub.setVisibility(View.VISIBLE);
-            season = getIntent().getStringExtra("season");
-            episode = getIntent().getStringExtra("episode");
-            sub.setText("Season " + season + " Episode " + episode);
-            sub.setVisibility(View.VISIBLE);
+        if (!stat.equals("TV")) {
+            searchYTS(imdb);
         }
-
-        String pirateapi = "http://tpbc.herokuapp.com/search/";
-        String add = title.replaceAll(" ", "_");
-        add = add.replaceAll("-", "_");
-        add = add.replaceAll(":", "");
-        add = add.replaceAll("'", "");
-        if (stat.equals("TV")) {
-            int s = Integer.parseInt(season);
-            int e = Integer.parseInt(episode);
-            if (!plus) {
-                if (s < 10) {
-                    add = add + "_s0" + s;
-                } else {
-                    add = add + "_s" + s;
-                }
-                if (e < 10) {
-                    add = add + "e0" + e;
-                } else {
-                    add = add + "e" + e;
-                }
-            } else {
-                add = add + "_season_" + s;
-            }
-        } else {
-            String q = "https://yts.lt/api/v2/list_movies.json?query_term=" + imdb + "&limit=1";
-            Ion.with(this)
-                    .load(q)
-                    .asJsonObject()
-                    .setCallback(new FutureCallback<JsonObject>() {
-                        @Override
-                        public void onCompleted(Exception e, JsonObject result) {
-                            try {
-                                JsonObject r = result.getAsJsonObject("data");
-                                JsonArray p = r.getAsJsonArray("movies");
-                                if (p != null) {
-                                    JsonObject a = (JsonObject) p.get(0);
-                                    yts = a.getAsJsonArray("torrents");
-                                    JsonObject tor;
-                                    for (int i = 0; i < yts.size(); i++) {
-                                        tor = (JsonObject) yts.get(i);
-                                        names.add("YTS " + tor.get("quality").getAsString() + " " + tor.get("type").getAsString() + "\n[SEEDS:" + tor.get("seeds").getAsInt() + " SIZE:" + tor.get("size").getAsString() + "]");
-                                    }
-                                }
-                            } catch (NullPointerException e1) {
-                                Toast.makeText(getApplicationContext(), "YTS not available", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-        }
-        Log.d("Query Name:", pirateapi + add);
-        Ion.with(this)
-                .load(pirateapi + add)
-                .asJsonArray()
-                .setCallback(new FutureCallback<JsonArray>() {
-                    @Override
-                    public void onCompleted(Exception e, JsonArray result) {
-                        try {
-                            JsonObject jo;
-                            informer = result;
-                            for (int i = 0; i < result.size(); i++) {
-                                jo = (JsonObject) result.get(i);
-                                names.add(jo.get("title").getAsString() + "\n[SEEDS:" + jo.get("seeds").getAsInt() + "]");
-                            }
-                            listviewbuilder();
-                        } catch (NullPointerException el) {
-                            Toast.makeText(getApplicationContext(), "No Torrents Available", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
 
         Uri data = getIntent().getData();
         if (action != null && action.equals(Intent.ACTION_VIEW) && data != null) {
@@ -183,19 +94,18 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
                 e.printStackTrace();
             }
         }
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                progressBar.setProgress(0);
-                if (torrentStream.isStreaming()) {
-                    torrentStream.stopStream();
-                    button.setText("Start stream");
-                    return;
-                }
-                torrentStream.startStream(streamUrl);
-                button.setText("Stop stream");
+
+        button.setOnClickListener(v -> {
+            progressBar.setProgress(0);
+            if (torrentStream.isStreaming()) {
+                torrentStream.stopStream();
+                button.setText("Start stream");
+                return;
             }
+            torrentStream.startStream(streamUrl);
+            button.setText("Stop stream");
         });
+
         if (stat.equals("TV") && plus) {
             TorrentOptions torrentOptions = new TorrentOptions.Builder()
                     .saveLocation(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))
@@ -217,57 +127,65 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
 
     }
 
-    private void listviewbuilder() {
-        ArrayAdapter<String> mArrayAdapter = new ArrayAdapter<String>(getBaseContext(), R.layout.torrent_list_items, R.id.textV, names);
-        torrentsList.setAdapter(mArrayAdapter);
-        torrentsList.setVisibility(View.VISIBLE);
-        torrentsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (stat.equals("TV")) {
-                    JsonObject nib = (JsonObject) informer.get(position);
-                    streamUrl = nib.get("magnet").getAsString();
-                } else {
-                    if (yts != null) {
-                        if (position < yts.size()) {
-                            JsonObject yib = (JsonObject) yts.get(position);
-                            streamUrl = "magnet:?xt=urn:btih:" + yib.get("hash").getAsString() + "&dn=" + "Xedin+loader" +
-                                    "&tr=http://track.one:1234/announce" +
-                                    "&tr=udp://track.two:80" +
-                                    "&tr=udp://open.demonii.com:1337/announce" +
-                                    "&tr=udp://tracker.openbittorrent.com:80" +
-                                    "&tr=udp://tracker.coppersurfer.tk:6969" +
-                                    "&tr=udp://glotorrents.pw:6969/announce" +
-                                    "&tr=udp://tracker.opentrackr.org:1337/announce" +
-                                    "&tr=udp://torrent.gresille.org:80/announce" +
-                                    "&tr=udp://p4p.arenabg.com:1337" +
-                                    "&tr=udp://tracker.leechers-paradise.org:6969";
+    private void searchYTS(String imdb) {
+        String q = "https://yts.mx/api/v2/list_movies.json?query_term=" + imdb + "&limit=1";
+        Ion.with(this)
+                .load(q)
+                .asJsonObject()
+                .setCallback((e, result) -> {
+                    try {
+                        JsonObject r = result.getAsJsonObject("data");
+                        JsonArray p = r.getAsJsonArray("movies");
+                        if (p != null) {
+                            JsonObject a = (JsonObject) p.get(0);
+                            yts = a.getAsJsonArray("torrents");
+                            JsonObject tor;
+                            for (int i = 0; i < yts.size(); i++) {
+                                tor = (JsonObject) yts.get(i);
+                                names.add("YTS " + tor.get("quality").getAsString() + " " + tor.get("type").getAsString() + "\n[SEEDS:" + tor.get("seeds").getAsInt() + " SIZE:" + tor.get("size").getAsString() + "]");
+                            }
+                            listviewbuilder();
                         }
-                        if (position >= yts.size()) {
-                            JsonObject nib = (JsonObject) informer.get(position - yts.size());
-                            streamUrl = nib.get("magnet").getAsString();
-                        }
-                    } else {
-                        JsonObject nib = (JsonObject) informer.get(position);
-                        streamUrl = nib.get("magnet").getAsString();
-                    }
-                }
-
-                Log.d("Magnet", streamUrl);
-                torrentsList.setVisibility(View.GONE);
-                infobox.setVisibility(View.VISIBLE);
-                ready = 1;
-                torrentStream.startStream(streamUrl);
-                mag.setVisibility(View.VISIBLE);
-                mag.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent magn = new Intent(Intent.ACTION_VIEW, Uri.parse(streamUrl));
-                        startActivity(magn);
+                    } catch (NullPointerException e1) {
+                        Toast.makeText(getApplicationContext(), "YTS not available", Toast.LENGTH_SHORT).show();
                     }
                 });
-                button.setText("Stop Stream");
+    }
+
+    private void listviewbuilder() {
+        ArrayAdapter<String> mArrayAdapter = new ArrayAdapter<>(getBaseContext(), R.layout.torrent_list_items, R.id.textV, names);
+        torrentsList.setAdapter(mArrayAdapter);
+        torrentsList.setVisibility(View.VISIBLE);
+        torrentsList.setOnItemClickListener((parent, view, position, id) -> {
+            if (!stat.equals("TV")) {
+                if (yts != null) {
+                    if (position < yts.size()) {
+                        JsonObject yib = (JsonObject) yts.get(position);
+                        streamUrl = "magnet:?xt=urn:btih:" + yib.get("hash").getAsString() + "&dn=" + "Xedin+loader" +
+                                "&tr=http://track.one:1234/announce" +
+                                "&tr=udp://track.two:80" +
+                                "&tr=udp://open.demonii.com:1337/announce" +
+                                "&tr=udp://tracker.openbittorrent.com:80" +
+                                "&tr=udp://tracker.coppersurfer.tk:6969" +
+                                "&tr=udp://glotorrents.pw:6969/announce" +
+                                "&tr=udp://tracker.opentrackr.org:1337/announce" +
+                                "&tr=udp://torrent.gresille.org:80/announce" +
+                                "&tr=udp://p4p.arenabg.com:1337" +
+                                "&tr=udp://tracker.leechers-paradise.org:6969";
+                    }
+                }
             }
+            Log.d("Magnet", streamUrl);
+            torrentsList.setVisibility(View.GONE);
+            infobox.setVisibility(View.VISIBLE);
+            ready = 1;
+            torrentStream.startStream(streamUrl);
+            mag.setVisibility(View.VISIBLE);
+            mag.setOnClickListener(v -> {
+                Intent magn = new Intent(Intent.ACTION_VIEW, Uri.parse(streamUrl));
+                startActivity(magn);
+            });
+            button.setText("Stop Stream");
         });
     }
 
