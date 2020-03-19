@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -32,15 +31,22 @@ import com.google.gson.JsonObject;
 import com.koushikdutta.ion.Ion;
 import com.shakir.xedin.R;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Objects;
 
 @SuppressLint("SetTextI18n")
 public class TorrentStreamer extends AppCompatActivity implements TorrentListener {
 
     private static final String TORRENT = "Torrent";
-
+    private static final String TPB_URL = "https://piratebayztemzmv.onion.ly";
     private Button button;
     private TorrentStream torrentStream;
     private ListView torrentsList;
@@ -49,13 +55,13 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
     private TextView prop;
     private RoundCornerProgressBar progressBar;
     private Button mag;
-
     private String streamUrl = "";
     private String stat;
     private Boolean plus;
     private JsonArray yts = null;
     private int ready = 0;
-    private ArrayList<String> names = new ArrayList<String>();
+    private ArrayList<String> names = new ArrayList<>();
+    private ArrayList<String> mags = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +74,7 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
         progressBar.setProgressBackgroundColor(Color.parseColor("#808080"));
         progressBar.setMax(100);
         TextView textView = findViewById(R.id.titler);
+        TextView sub = findViewById(R.id.sub);
         torrentsList = findViewById(R.id.listof);
         button1 = findViewById(R.id.plbutton);
         infobox = findViewById(R.id.infobox);
@@ -83,6 +90,32 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
 
         if (!stat.equals("TV")) {
             searchYTS(imdb);
+            searchTPB(TPB_URL + "/s/?q=" + title);
+        } else {
+            sub.setVisibility(View.VISIBLE);
+            String season = getIntent().getStringExtra("season");
+            String episode = getIntent().getStringExtra("episode");
+            sub.setText("Season " + season + " Episode " + episode);
+            sub.setVisibility(View.VISIBLE);
+            String add = title;
+            int s = Integer.parseInt(season);
+            int e = Integer.parseInt(episode);
+            if (plus) {
+                add = add + " season " + s;
+                searchTPB(TPB_URL + "/s/?q=" + add);
+            } else {
+                if (s < 10) {
+                    add = add + " s0" + s;
+                } else {
+                    add = add + " s" + s;
+                }
+                if (e < 10) {
+                    add = add + "e0" + e;
+                } else {
+                    add = add + "e" + e;
+                }
+                searchTPB(TPB_URL + "/s/?q=" + add);
+            }
         }
 
         Uri data = getIntent().getData();
@@ -152,28 +185,56 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
                 });
     }
 
+    private void searchTPB(String url) {
+        new Thread(() -> {
+            try {
+                Document doc = Jsoup.connect(url).get();
+                Element data = doc.getElementById("searchResult");
+                Elements titles = data.getElementsByClass("detName");
+                Elements magnets = data.removeClass("detName").select("a[href]");
+                int i = 0;
+                for (Element title : titles) {
+                    names.add(title.text());
+                }
+                for (Element magnet : magnets) {
+                    if (magnet.attr("href").contains("magnet") && i < 30) {
+                        mags.add(magnet.attr("href"));
+                        i++;
+                    } else if (i >= 30) {
+                        break;
+                    }
+                }
+            } catch (IOException | NullPointerException e) {
+                Log.d("run: ", Objects.requireNonNull(e.getMessage()));
+            }
+            runOnUiThread(this::listviewbuilder);
+        }).start();
+    }
+
     private void listviewbuilder() {
         ArrayAdapter<String> mArrayAdapter = new ArrayAdapter<>(getBaseContext(), R.layout.torrent_list_items, R.id.textV, names);
         torrentsList.setAdapter(mArrayAdapter);
         torrentsList.setVisibility(View.VISIBLE);
         torrentsList.setOnItemClickListener((parent, view, position, id) -> {
-            if (!stat.equals("TV")) {
-                if (yts != null) {
-                    if (position < yts.size()) {
-                        JsonObject yib = (JsonObject) yts.get(position);
-                        streamUrl = "magnet:?xt=urn:btih:" + yib.get("hash").getAsString() + "&dn=" + "Xedin+loader" +
-                                "&tr=http://track.one:1234/announce" +
-                                "&tr=udp://track.two:80" +
-                                "&tr=udp://open.demonii.com:1337/announce" +
-                                "&tr=udp://tracker.openbittorrent.com:80" +
-                                "&tr=udp://tracker.coppersurfer.tk:6969" +
-                                "&tr=udp://glotorrents.pw:6969/announce" +
-                                "&tr=udp://tracker.opentrackr.org:1337/announce" +
-                                "&tr=udp://torrent.gresille.org:80/announce" +
-                                "&tr=udp://p4p.arenabg.com:1337" +
-                                "&tr=udp://tracker.leechers-paradise.org:6969";
-                    }
+            if (yts != null) {
+                if (position < yts.size()) {
+                    JsonObject yib = (JsonObject) yts.get(position);
+                    streamUrl = "magnet:?xt=urn:btih:" + yib.get("hash").getAsString() + "&dn=" + "Xedin+loader" +
+                            "&tr=http://track.one:1234/announce" +
+                            "&tr=udp://track.two:80" +
+                            "&tr=udp://open.demonii.com:1337/announce" +
+                            "&tr=udp://tracker.openbittorrent.com:80" +
+                            "&tr=udp://tracker.coppersurfer.tk:6969" +
+                            "&tr=udp://glotorrents.pw:6969/announce" +
+                            "&tr=udp://tracker.opentrackr.org:1337/announce" +
+                            "&tr=udp://torrent.gresille.org:80/announce" +
+                            "&tr=udp://p4p.arenabg.com:1337" +
+                            "&tr=udp://tracker.leechers-paradise.org:6969";
+                } else {
+                    streamUrl = mags.get(position - yts.size());
                 }
+            } else {
+                streamUrl = mags.get(position);
             }
             Log.d("Magnet", streamUrl);
             torrentsList.setVisibility(View.GONE);
@@ -208,14 +269,11 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
             infobox.setVisibility(View.GONE);
             ArrayAdapter<String> nArrayAdapter = new ArrayAdapter<>(this, R.layout.torrent_list_items, R.id.textV, torrent.getFileNames());
             torrentsList.setAdapter(nArrayAdapter);
-            torrentsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    torrent.setSelectedFileIndex(position);
-                    torrent.startDownload();
-                    torrentsList.setVisibility(View.GONE);
-                    infobox.setVisibility(View.VISIBLE);
-                }
+            torrentsList.setOnItemClickListener((parent, view, position, id) -> {
+                torrent.setSelectedFileIndex(position);
+                torrent.startDownload();
+                torrentsList.setVisibility(View.GONE);
+                infobox.setVisibility(View.VISIBLE);
             });
         }
     }
@@ -238,12 +296,7 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
         progressBar.setProgress(100);
         Log.d(TORRENT, "onStreamReady: " + torrent.getVideoFile());
         button1.setVisibility(View.VISIBLE);
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openstream(torrent);
-            }
-        });
+        button1.setOnClickListener(v -> openstream(torrent));
         openstream(torrent);
     }
 
