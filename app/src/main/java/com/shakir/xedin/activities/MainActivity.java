@@ -32,7 +32,6 @@ import java.util.List;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 import retrofit.Callback;
-import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -60,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     search.setVisibility(View.GONE);
                     if (flag != 1) {
-                        UseRest("movie");
+                        UseTheRest("movies");
                         flag = 1;
                     }
                     return true;
@@ -70,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     search.setVisibility(View.GONE);
                     if (flag != 0) {
-                        UseRest("tv");
+                        UseTheRest("tv");
                         flag = 0;
                     }
                     return true;
@@ -82,16 +81,7 @@ public class MainActivity extends AppCompatActivity {
                         search.setVisibility(View.VISIBLE);
                         searcher.setText("");
                         mRecyclerView.setVisibility(View.GONE);
-                        searcher.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (mode == 0) {
-                                    UseRest("movie", searcher.getText().toString());
-                                } else {
-                                    UseRest("tv", searcher.getText().toString());
-                                }
-                            }
-                        });
+                        searcher.setOnClickListener(v -> UseTheRest("search"));
                         flag = 2;
                     }
                     return true;
@@ -140,29 +130,27 @@ public class MainActivity extends AppCompatActivity {
         mAdapter = new MoviesAdapter(this);
         mRecyclerView.setAdapter(new AlphaInAnimationAdapter(new ScaleInAnimationAdapter(mAdapter)));
         mRecyclerView.getLayoutManager();
-        switcher.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mode == 0) {
-                    switcher.setText("Movies");
-                    searcher.setHint("TV shows");
-                    mode = 1;
-                } else {
-                    switcher.setText("TV");
-                    searcher.setHint("Movies");
-                    mode = 0;
-                }
+        switcher.setOnClickListener(v -> {
+            if (mode == 0) {
+                switcher.setText("Movies");
+                searcher.setHint("TV shows");
+                mode = 1;
+            } else {
+                switcher.setText("TV");
+                searcher.setHint("Movies");
+                mode = 0;
             }
         });
         //.setMeasurementCacheEnabled(false);
-        UseRest("movie");
+        UseTheRest("movies");
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
-    public void UseRest(String on) {
+    void UseTheRest(String serv) {
+        final String s = serv;
         List<Movie> movies = new ArrayList<>();
         for (int i = 0; i < 25; i++) {
             movies.add(new Movie());
@@ -170,15 +158,15 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.setMovieList(movies);
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("http://api.themoviedb.org/3")
-                .setRequestInterceptor(new RequestInterceptor() {
-                    @Override
-                    public void intercept(RequestFacade request) {
-                        request.addEncodedQueryParam("api_key", BuildConfig.API_KEY);
+                .setRequestInterceptor(request -> {
+                    request.addEncodedQueryParam("api_key", BuildConfig.API_KEY);
+                    if (s.equals("search")) {
+                        request.addEncodedQueryParam("query", searcher.getText().toString());
                     }
                 })
                 .build();
         MoviesApiService service = restAdapter.create(MoviesApiService.class);
-        if (on.equals("movie")) {
+        if (serv.equals("movies")) {
             service.getPopularMovies(new Callback<MovieResult>() {
                 @Override
                 public void success(MovieResult movieResult, Response response) {
@@ -191,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                     error.printStackTrace();
                 }
             });
-        } else {
+        } else if (serv.equals("tv")) {
             service.getPopularShows(new Callback<MovieResult>() {
                 @Override
                 public void success(MovieResult movieResult, Response response) {
@@ -204,51 +192,34 @@ public class MainActivity extends AppCompatActivity {
                     error.printStackTrace();
                 }
             });
-        }
-    }
-
-    public void UseRest(String on, String searchQuery) {
-        List<Movie> movies = new ArrayList<>();
-        for (int i = 0; i < 25; i++) {
-            movies.add(new Movie());
-        }
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint("http://api.themoviedb.org/3")
-                .setRequestInterceptor(new RequestInterceptor() {
+        } else if (serv.equals("search")) {
+            if (mode == 0) {
+                service.getSearchMovies(new Callback<MovieResult>() {
                     @Override
-                    public void intercept(RequestFacade request) {
-                        request.addEncodedQueryParam("api_key", BuildConfig.API_KEY);
-                        request.addEncodedQueryParam("query", searchQuery);
+                    public void success(MovieResult movieResult, Response response) {
+                        mAdapter.setMovieList(movieResult.getResults());
+                        mRecyclerView.setVisibility(View.VISIBLE);
                     }
-                })
-                .build();
-        MoviesApiService service = restAdapter.create(MoviesApiService.class);
-        if (on.equals("movie")) {
-            service.getSearchMovies(new Callback<MovieResult>() {
-                @Override
-                public void success(MovieResult movieResult, Response response) {
-                    mAdapter.setMovieList(movieResult.getResults());
-                    mRecyclerView.setVisibility(View.VISIBLE);
-                }
 
-                @Override
-                public void failure(RetrofitError error) {
-                    error.printStackTrace();
-                }
-            });
-        } else {
-            service.getPopularShows(new Callback<MovieResult>() {
-                @Override
-                public void success(MovieResult movieResult, Response response) {
-                    mAdapter.setMovieList(movieResult.getResults());
-                    mRecyclerView.setVisibility(View.VISIBLE);
-                }
+                    @Override
+                    public void failure(RetrofitError error) {
+                        error.printStackTrace();
+                    }
+                });
+            } else {
+                service.getSearchShows(new Callback<MovieResult>() {
+                    @Override
+                    public void success(MovieResult movieResult, Response response) {
+                        mAdapter.setMovieList(movieResult.getResults());
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                    }
 
-                @Override
-                public void failure(RetrofitError error) {
-                    error.printStackTrace();
-                }
-            });
+                    @Override
+                    public void failure(RetrofitError error) {
+                        error.printStackTrace();
+                    }
+                });
+            }
         }
     }
 }
