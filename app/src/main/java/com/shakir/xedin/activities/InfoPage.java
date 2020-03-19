@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.MenuItem;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
@@ -22,13 +21,10 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.palette.graphics.Palette;
 
-import com.google.gson.JsonObject;
-import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.shakir.xedin.BuildConfig;
 import com.shakir.xedin.R;
@@ -104,23 +100,22 @@ public class InfoPage extends AppCompatActivity {
                         assert backd != null;
                         backd.setImageBitmap(bitmap);
                         Palette.from(bitmap)
-                                .generate(new Palette.PaletteAsyncListener() {
-                                    @Override
-                                    public void onGenerated(@Nullable Palette palette) {
-                                        try {
-                                            Palette.Swatch textSwatch = palette.getVibrantSwatch();
-                                            parental.setBackgroundColor(textSwatch.getRgb());
-                                            tet.setTextColor(textSwatch.getBodyTextColor());
-                                            disc.setTextColor(textSwatch.getTitleTextColor());
-                                            aSwitch.setTextColor(textSwatch.getBodyTextColor());
-                                            aSwitch.setHighlightColor(textSwatch.getRgb());
-                                            bSwitch.setTextColor(textSwatch.getBodyTextColor());
-                                            bSwitch.setHighlightColor(textSwatch.getRgb());
-                                            getWindow().setStatusBarColor(textSwatch.getRgb());
-                                            getWindow().setNavigationBarColor(textSwatch.getRgb());
-                                        } catch (NullPointerException e) {
-                                            e.printStackTrace();
-                                        }
+                                .generate(palette -> {
+                                    try {
+                                        assert palette != null;
+                                        Palette.Swatch textSwatch = palette.getVibrantSwatch();
+                                        assert textSwatch != null;
+                                        parental.setBackgroundColor(textSwatch.getRgb());
+                                        tet.setTextColor(textSwatch.getBodyTextColor());
+                                        disc.setTextColor(textSwatch.getTitleTextColor());
+                                        aSwitch.setTextColor(textSwatch.getBodyTextColor());
+                                        aSwitch.setHighlightColor(textSwatch.getRgb());
+                                        bSwitch.setTextColor(textSwatch.getBodyTextColor());
+                                        bSwitch.setHighlightColor(textSwatch.getRgb());
+                                        getWindow().setStatusBarColor(textSwatch.getRgb());
+                                        getWindow().setNavigationBarColor(textSwatch.getRgb());
+                                    } catch (NullPointerException e) {
+                                        e.printStackTrace();
                                     }
                                 });
                     }
@@ -147,7 +142,7 @@ public class InfoPage extends AppCompatActivity {
         });
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setUseWideViewPort(true);
-        if (status == "Movie") {
+        if (status.equals("Movie")) {
             imdbSources("https://api.themoviedb.org/3/movie/" + tmdbid + "/external_ids?api_key=" + BuildConfig.API_KEY);
         } else {
             imdbSources("http://api.themoviedb.org/3/tv/" + tmdbid + "/external_ids?api_key=" + BuildConfig.API_KEY);
@@ -158,66 +153,49 @@ public class InfoPage extends AppCompatActivity {
         Ion.with(this)
                 .load(url)
                 .asJsonObject()
-                .setCallback(new FutureCallback<JsonObject>() {
-                    @Override
-                    public void onCompleted(Exception e, JsonObject result) {
-                        if (status.equals("Movie")) {
-                            imdb = result.get("imdb_id").getAsString();
-                        } else {
-                            imdb = result.get("imdb_id").getAsString();
-                        }
-                        play.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
+                .setCallback((e, result) -> {
+                    if (status.equals("Movie")) {
+                        imdb = result.get("imdb_id").getAsString();
+                    } else {
+                        imdb = result.get("imdb_id").getAsString();
+                    }
+                    play.setOnClickListener(v -> playVidSrc(imdb));
+                    play.setOnLongClickListener(v -> {
+                        PopupMenu popupMenu = new PopupMenu(InfoPage.this, play);
+                        popupMenu.getMenuInflater()
+                                .inflate(R.menu.play_menu, popupMenu.getMenu());
+                        popupMenu.setOnMenuItemClickListener(item -> {
+                            if (item.getTitle().toString().equals("VideoSpider")) {
+                                playVideoSpider();
+                                return true;
+                            } else if (item.getTitle().toString().equals("ODB")) {
+                                playODB(imdb);
+                                return true;
+                            } else if (item.getTitle().toString().equals("Vplus")) {
+                                playVplus(imdb);
+                                return true;
+                            } else {
                                 playVidSrc(imdb);
-                            }
-                        });
-                        play.setOnLongClickListener(new View.OnLongClickListener() {
-                            @Override
-                            public boolean onLongClick(View v) {
-                                PopupMenu popupMenu = new PopupMenu(InfoPage.this, play);
-                                popupMenu.getMenuInflater()
-                                        .inflate(R.menu.play_menu, popupMenu.getMenu());
-                                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                    @Override
-                                    public boolean onMenuItemClick(MenuItem item) {
-                                        if (item.getTitle().toString().equals("VideoSpider")) {
-                                            playVideoSpider();
-                                            return true;
-                                        } else if (item.getTitle().toString().equals("ODB")) {
-                                            playODB(imdb);
-                                            return true;
-                                        } else if (item.getTitle().toString().equals("Vplus")) {
-                                            playVplus(imdb);
-                                            return true;
-                                        } else {
-                                            playVidSrc(imdb);
-                                            return true;
-                                        }
-                                    }
-                                });
-                                popupMenu.show();
                                 return true;
                             }
                         });
-                        torrents.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(InfoPage.this, TorrentStreamer.class);
-                                //intent.putExtra("magnet", magnet);
-                                intent.putExtra("title", tet.getText().toString());
-                                intent.putExtra("status", status);
-                                intent.putExtra("imdb", imdb);
-                                intent.putExtra("tmdbid", tmdbid);
-                                intent.putExtra("plusmo", bSwitch.isChecked());
-                                if (status.equals("TV")) {
-                                    intent.putExtra("season", season.getText().toString());
-                                    intent.putExtra("episode", episode.getText().toString());
-                                }
-                                InfoPage.this.startActivity(intent);
-                            }
-                        });
-                    }
+                        popupMenu.show();
+                        return true;
+                    });
+                    torrents.setOnClickListener(v -> {
+                        Intent intent = new Intent(InfoPage.this, TorrentStreamer.class);
+                        //intent.putExtra("magnet", magnet);
+                        intent.putExtra("title", tet.getText().toString());
+                        intent.putExtra("status", status);
+                        intent.putExtra("imdb", imdb);
+                        intent.putExtra("tmdbid", tmdbid);
+                        intent.putExtra("plusmo", bSwitch.isChecked());
+                        if (status.equals("TV")) {
+                            intent.putExtra("season", season.getText().toString());
+                            intent.putExtra("episode", episode.getText().toString());
+                        }
+                        InfoPage.this.startActivity(intent);
+                    });
                 });
     }
 
@@ -317,5 +295,13 @@ public class InfoPage extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        if (immersive == 1) {
+            hideSystemUI();
+        }
+        super.onResume();
     }
 }
