@@ -141,7 +141,7 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
 
         if (stat.equals("TV") && plus) {
             TorrentOptions torrentOptions = new TorrentOptions.Builder()
-                    .saveLocation(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))
+                    .saveLocation(Objects.requireNonNull(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)))
                     .removeFilesAfterStop(true)
                     .autoDownload(false)
                     .build();
@@ -150,7 +150,7 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
             torrentStream.addListener(this);
         } else {
             TorrentOptions torrentOptions = new TorrentOptions.Builder()
-                    .saveLocation(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))
+                    .saveLocation(Objects.requireNonNull(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)))
                     .removeFilesAfterStop(true)
                     .build();
 
@@ -240,6 +240,7 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
             torrentsList.setVisibility(View.GONE);
             infobox.setVisibility(View.VISIBLE);
             ready = 1;
+            Log.d("listviewbuilder: ", streamUrl);
             torrentStream.startStream(streamUrl);
             mag.setVisibility(View.VISIBLE);
             mag.setOnClickListener(v -> {

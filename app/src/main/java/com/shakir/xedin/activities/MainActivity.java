@@ -166,35 +166,9 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .build();
         MoviesApiService service = restAdapter.create(MoviesApiService.class);
-        if (serv.equals("movies")) {
-            service.getPopularMovies(new Callback<MovieResult>() {
-                @Override
-                public void success(MovieResult movieResult, Response response) {
-                    mAdapter.setMovieList(movieResult.getResults());
-                    mRecyclerView.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    error.printStackTrace();
-                }
-            });
-        } else if (serv.equals("tv")) {
-            service.getPopularShows(new Callback<MovieResult>() {
-                @Override
-                public void success(MovieResult movieResult, Response response) {
-                    mAdapter.setMovieList(movieResult.getResults());
-                    mRecyclerView.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    error.printStackTrace();
-                }
-            });
-        } else if (serv.equals("search")) {
-            if (mode == 0) {
-                service.getSearchMovies(new Callback<MovieResult>() {
+        switch (serv) {
+            case "movies":
+                service.getPopularMovies(new Callback<MovieResult>() {
                     @Override
                     public void success(MovieResult movieResult, Response response) {
                         mAdapter.setMovieList(movieResult.getResults());
@@ -206,8 +180,9 @@ public class MainActivity extends AppCompatActivity {
                         error.printStackTrace();
                     }
                 });
-            } else {
-                service.getSearchShows(new Callback<MovieResult>() {
+                break;
+            case "tv":
+                service.getPopularShows(new Callback<MovieResult>() {
                     @Override
                     public void success(MovieResult movieResult, Response response) {
                         mAdapter.setMovieList(movieResult.getResults());
@@ -219,7 +194,36 @@ public class MainActivity extends AppCompatActivity {
                         error.printStackTrace();
                     }
                 });
-            }
+                break;
+            case "search":
+                if (mode == 0) {
+                    service.getSearchMovies(new Callback<MovieResult>() {
+                        @Override
+                        public void success(MovieResult movieResult, Response response) {
+                            mAdapter.setMovieList(movieResult.getResults());
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            error.printStackTrace();
+                        }
+                    });
+                } else {
+                    service.getSearchShows(new Callback<MovieResult>() {
+                        @Override
+                        public void success(MovieResult movieResult, Response response) {
+                            mAdapter.setMovieList(movieResult.getResults());
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            error.printStackTrace();
+                        }
+                    });
+                }
+                break;
         }
     }
 }
