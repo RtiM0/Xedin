@@ -31,10 +31,9 @@
             android:configChanges="orientation|screenSize" />
         <activity
             android:name=".activities.MainActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity android:name=".activities.TorrentStreamer" />
-        <activity
-            android:name=".activities.AboutActivity"
-            android:configChanges="orientation|screenSize" />
     </application>
 </manifest>

@@ -1,97 +1,53 @@
 package com.shakir.xedin.activities;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.michaelflisar.changelog.ChangelogBuilder;
-import com.shakir.xedin.BuildConfig;
 import com.shakir.xedin.R;
-import com.shakir.xedin.adapters.MoviesAdapter;
-import com.shakir.xedin.interfaces.MoviesApiService;
-import com.shakir.xedin.models.Movie;
-import com.shakir.xedin.utils.MovieResult;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
-import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import com.shakir.xedin.fragments.AboutFragment;
+import com.shakir.xedin.fragments.PopularMovies;
+import com.shakir.xedin.fragments.PopularTV;
+import com.shakir.xedin.fragments.Search;
 
 public class MainActivity extends AppCompatActivity {
 
-    int flag = 1;
-    private RecyclerView mRecyclerView;
-    private MoviesAdapter mAdapter;
-    private LinearLayout search;
-    private LinearLayout main;
-    private EditText searcher;
-    private Button switcher;
-    private int mode = 0;
+    final Fragment fragment1 = new PopularMovies();
+    final Fragment fragment2 = new PopularTV();
+    final Fragment fragment3 = new Search();
+    final Fragment fragment4 = new AboutFragment();
+    final FragmentManager fm = getSupportFragmentManager();
+    Fragment active = fragment1;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    if (main.getVisibility() == View.GONE) {
-                        main.setVisibility(View.VISIBLE);
-                    }
-                    search.setVisibility(View.GONE);
-                    if (flag != 1) {
-                        UseTheRest("movies");
-                        flag = 1;
-                    }
-                    return true;
-                case R.id.navigation_dashboard:
-                    if (main.getVisibility() == View.GONE) {
-                        main.setVisibility(View.VISIBLE);
-                    }
-                    search.setVisibility(View.GONE);
-                    if (flag != 0) {
-                        UseTheRest("tv");
-                        flag = 0;
-                    }
-                    return true;
-                case R.id.navigation_notifications:
-                    if (main.getVisibility() == View.GONE) {
-                        main.setVisibility(View.VISIBLE);
-                    }
-                    if (flag != 2) {
-                        search.setVisibility(View.VISIBLE);
-                        searcher.setText("");
-                        mRecyclerView.setVisibility(View.GONE);
-                        searcher.setOnClickListener(v -> UseTheRest("search"));
-                        flag = 2;
-                    }
-                    return true;
-                case R.id.navigation_about:
-                    Intent about = new Intent(MainActivity.this, AboutActivity.class);
-                    MainActivity.this.startActivity(about);
-                    return true;
-            }
-            return false;
+            = item -> {
+        switch (item.getItemId()) {
+            case R.id.navigation_home:
+                fm.beginTransaction().hide(active).show(fragment1).commit();
+                active = fragment1;
+                return true;
+            case R.id.navigation_dashboard:
+                fm.beginTransaction().hide(active).show(fragment2).commit();
+                active = fragment2;
+                return true;
+            case R.id.navigation_notifications:
+                fm.beginTransaction().hide(active).show(fragment3).commit();
+                active = fragment3;
+                return true;
+            case R.id.navigation_about:
+                fm.beginTransaction().hide(active).show(fragment4).commit();
+                active = fragment4;
+                return true;
         }
+        return false;
     };
 
     @Override
@@ -120,110 +76,12 @@ public class MainActivity extends AppCompatActivity {
         }
         getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
                 .putBoolean("isFirstRun", false).apply();
-
-        mRecyclerView = findViewById(R.id.recyclerView);
-        searcher = findViewById(R.id.searcher);
-        search = findViewById(R.id.search);
-        main = findViewById(R.id.mained);
-        switcher = findViewById(R.id.switcher);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        mAdapter = new MoviesAdapter(this);
-        mRecyclerView.setAdapter(new AlphaInAnimationAdapter(new ScaleInAnimationAdapter(mAdapter)));
-        mRecyclerView.getLayoutManager();
-        switcher.setOnClickListener(v -> {
-            if (mode == 0) {
-                switcher.setText("Movies");
-                searcher.setHint("TV shows");
-                mode = 1;
-            } else {
-                switcher.setText("TV");
-                searcher.setHint("Movies");
-                mode = 0;
-            }
-        });
-        //.setMeasurementCacheEnabled(false);
-        UseTheRest("movies");
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-    }
-
-    void UseTheRest(String serv) {
-        final String s = serv;
-        List<Movie> movies = new ArrayList<>();
-        for (int i = 0; i < 25; i++) {
-            movies.add(new Movie());
-        }
-        mAdapter.setMovieList(movies);
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint("http://api.themoviedb.org/3")
-                .setRequestInterceptor(request -> {
-                    request.addEncodedQueryParam("api_key", BuildConfig.API_KEY);
-                    if (s.equals("search")) {
-                        request.addEncodedQueryParam("query", searcher.getText().toString());
-                    }
-                })
-                .build();
-        MoviesApiService service = restAdapter.create(MoviesApiService.class);
-        switch (serv) {
-            case "movies":
-                service.getPopularMovies(new Callback<MovieResult>() {
-                    @Override
-                    public void success(MovieResult movieResult, Response response) {
-                        mAdapter.setMovieList(movieResult.getResults());
-                        mRecyclerView.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        error.printStackTrace();
-                    }
-                });
-                break;
-            case "tv":
-                service.getPopularShows(new Callback<MovieResult>() {
-                    @Override
-                    public void success(MovieResult movieResult, Response response) {
-                        mAdapter.setMovieList(movieResult.getResults());
-                        mRecyclerView.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        error.printStackTrace();
-                    }
-                });
-                break;
-            case "search":
-                if (mode == 0) {
-                    service.getSearchMovies(new Callback<MovieResult>() {
-                        @Override
-                        public void success(MovieResult movieResult, Response response) {
-                            mAdapter.setMovieList(movieResult.getResults());
-                            mRecyclerView.setVisibility(View.VISIBLE);
-                        }
-
-                        @Override
-                        public void failure(RetrofitError error) {
-                            error.printStackTrace();
-                        }
-                    });
-                } else {
-                    service.getSearchShows(new Callback<MovieResult>() {
-                        @Override
-                        public void success(MovieResult movieResult, Response response) {
-                            mAdapter.setMovieList(movieResult.getResults());
-                            mRecyclerView.setVisibility(View.VISIBLE);
-                        }
-
-                        @Override
-                        public void failure(RetrofitError error) {
-                            error.printStackTrace();
-                        }
-                    });
-                }
-                break;
-        }
+        fm.beginTransaction().add(R.id.main_container, fragment4, "4").hide(fragment4).commit();
+        fm.beginTransaction().add(R.id.main_container, fragment3, "3").hide(fragment3).commit();
+        fm.beginTransaction().add(R.id.main_container, fragment2, "2").hide(fragment2).commit();
+        fm.beginTransaction().add(R.id.main_container, fragment1, "1").commit();
     }
 }

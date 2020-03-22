@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#363640"
+    tools:context=".fragments.Search">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="#60606b"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:weightSum="10">
+
+            <EditText
+                android:id="@+id/searcher"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="8"
+                android:background="@android:color/transparent"
+                android:hint="Movie Name"
+                android:inputType="textAutoComplete"
+                android:textColor="#ffffff" />
+
+            <Button
+                android:id="@+id/switcher"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="#10101a"
+                android:text="TV"
+                android:textColor="#ffffff" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/searchRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="?attr/actionBarSize" />
+    </LinearLayout>
+
+</FrameLayout>
