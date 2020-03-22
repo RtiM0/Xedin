@@ -131,8 +131,7 @@ public class InfoPage extends AppCompatActivity {
                     }
                 });
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.clearCache(true);
-        webView.clearHistory();
+        webView.getSettings().setDomStorageEnabled(true);
         webView.setWebChromeClient(new FullScreenClient(parental, backs));
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -273,7 +272,8 @@ public class InfoPage extends AppCompatActivity {
     private void hideSystemUI() {
         parental.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_FULLSCREEN);
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.KEEP_SCREEN_ON);
         immersive = 1;
     }
 
