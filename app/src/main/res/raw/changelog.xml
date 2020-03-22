@@ -3,6 +3,7 @@
         versionCode="6"
         versionName="v0.9.6">
         <info>Library section Depreciated</info>
+        <new>Whole app rebased for efficient load times</new>
         <bugfix>Fix Torrent Search</bugfix>
         <bugfix>Fix Torrent Streaming in Android 10</bugfix>
         <bugfix>iFrame Full-Screen fix</bugfix>
