@@ -1,15 +1,18 @@
 <changelog>
     <release
         versionCode="6"
+        date="03/20"
         versionName="v0.9.6">
         <info>Library section Depreciated</info>
         <new>Whole app rebased for efficient load times</new>
         <bugfix>Fix Torrent Search</bugfix>
-        <bugfix>Fix Torrent Streaming in Android 10</bugfix>
+        <bugfix>Fix Torrent Streaming in Android 9+</bugfix>
         <bugfix>iFrame Full-Screen fix</bugfix>
+        <bugfix>Keep screen on while playing</bugfix>
     </release>
     <release
         versionCode="5"
+        date="08/19"
         versionName="v0.9.5.1">
         <info>Library section to save watchlisted media Coming Soon</info>
         <new>Add Intro</new>
@@ -18,6 +21,7 @@
     </release>
     <release
         versionCode="4"
+        date="08/19"
         versionName="v0.9.5">
         <new>Plus Mode for TV Show torrents: The seeds on an single episode of a show is often low
             seeded, with Plus Mode 'complete season' torrents are fetched which has significantly

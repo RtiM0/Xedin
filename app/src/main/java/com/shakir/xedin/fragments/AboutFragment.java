@@ -30,7 +30,6 @@ public class AboutFragment extends Fragment {
                 .setDescription("A light application that retrieves data from TMDB, with various media streaming features")
                 .addItem(new Element().setTitle("Version 0.9.6"))
                 .addItem(new Element().setTitle("Made with <3 by Mustafa Shakir (RtiM0)"))
-//                .addItem(new Element().setTitle("This version is and can only be distributed Manish Boddhana"))
                 .addGroup("Connect")
                 .addEmail("shakirmustafa58@gmail.com", "Mail")
                 .addTwitter("RtiM0", "Tweet")
