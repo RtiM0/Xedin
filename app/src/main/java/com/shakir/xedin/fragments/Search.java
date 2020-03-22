@@ -23,10 +23,11 @@ import java.util.List;
 
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Search extends Fragment {
     private int mode = 0;
@@ -65,40 +66,41 @@ public class Search extends Fragment {
                 movies.add(new Movie());
             }
             mAdapter.setMovieList(movies);
-            RestAdapter restAdapter = new RestAdapter.Builder()
-                    .setEndpoint("http://api.themoviedb.org/3")
-                    .setRequestInterceptor(request -> {
-                        request.addEncodedQueryParam("api_key", BuildConfig.API_KEY);
-                        request.addEncodedQueryParam("query", searcher.getText().toString());
-                    })
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("http://api.themoviedb.org/3/")
+                    .addConverterFactory(GsonConverterFactory.create())
                     .build();
-            MoviesApiService service = restAdapter.create(MoviesApiService.class);
+            MoviesApiService service = retrofit.create(MoviesApiService.class);
             if (mode == 0) {
-                service.getSearchMovies(new Callback<MovieResult>() {
-                    @Override
-                    public void success(MovieResult movieResult, Response response) {
-                        mAdapter.setMovieList(movieResult.getResults());
-                        mRecyclerView.setVisibility(View.VISIBLE);
-                    }
+                service.getSearchMovies(BuildConfig.API_KEY, searcher.getText().toString())
+                        .enqueue(new Callback<MovieResult>() {
+                            @Override
+                            public void onResponse(Call<MovieResult> call, Response<MovieResult> response) {
+                                MovieResult movieResult = response.body();
+                                mAdapter.setMovieList(movieResult.getMovies());
+                                mRecyclerView.setVisibility(View.VISIBLE);
+                            }
 
-                    @Override
-                    public void failure(RetrofitError error) {
-                        error.printStackTrace();
-                    }
-                });
+                            @Override
+                            public void onFailure(Call<MovieResult> call, Throwable t) {
+
+                            }
+                        });
             } else {
-                service.getSearchShows(new Callback<MovieResult>() {
-                    @Override
-                    public void success(MovieResult movieResult, Response response) {
-                        mAdapter.setMovieList(movieResult.getResults());
-                        mRecyclerView.setVisibility(View.VISIBLE);
-                    }
+                service.getSearchShows(BuildConfig.API_KEY, searcher.getText().toString())
+                        .enqueue(new Callback<MovieResult>() {
+                            @Override
+                            public void onResponse(Call<MovieResult> call, Response<MovieResult> response) {
+                                MovieResult movieResult = response.body();
+                                mAdapter.setMovieList(movieResult.getMovies());
+                                mRecyclerView.setVisibility(View.VISIBLE);
+                            }
 
-                    @Override
-                    public void failure(RetrofitError error) {
-                        error.printStackTrace();
-                    }
-                });
+                            @Override
+                            public void onFailure(Call<MovieResult> call, Throwable t) {
+
+                            }
+                        });
             }
         });
         return v;

@@ -3,8 +3,6 @@ package com.shakir.xedin.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 public class Movie {
     private static final String TMDB_IMAGE_PATH = "http://image.tmdb.org/t/p/w500";
 
@@ -82,13 +80,4 @@ public class Movie {
     public void setName(String name) {
         this.name = name;
     }
-
-    public static class MovieResult {
-        private List<Movie> results;
-
-        public List<Movie> getResults() {
-            return results;
-        }
-    }
-
 }

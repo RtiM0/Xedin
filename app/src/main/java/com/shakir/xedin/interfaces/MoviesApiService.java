@@ -2,20 +2,21 @@ package com.shakir.xedin.interfaces;
 
 import com.shakir.xedin.utils.MovieResult;
 
-import retrofit.Callback;
-import retrofit.http.GET;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 public interface MoviesApiService {
-    @GET("/movie/popular")
-    void getPopularMovies(Callback<MovieResult> cb);
+    @GET("movie/popular")
+    Call<MovieResult> getPopularMovies(@Query("api_key") String apiKey);
 
-    @GET("/tv/popular")
-    void getPopularShows(Callback<MovieResult> cb);
+    @GET("tv/popular")
+    Call<MovieResult> getPopularShows(@Query("api_key") String apiKey);
 
-    @GET("/search/movie")
-    void getSearchMovies(Callback<MovieResult> cb);
+    @GET("search/movie")
+    Call<MovieResult> getSearchMovies(@Query("api_key") String apiKey, @Query("query") String query);
 
-    @GET("/search/tv")
-    void getSearchShows(Callback<MovieResult> cb);
+    @GET("search/tv")
+    Call<MovieResult> getSearchShows(@Query("api_key") String apiKey, @Query("query") String query);
 }
 

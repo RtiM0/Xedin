@@ -21,10 +21,11 @@ import java.util.List;
 
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PopularTV extends Fragment {
 
@@ -47,22 +48,21 @@ public class PopularTV extends Fragment {
             movies.add(new Movie());
         }
         mAdapter.setMovieList(movies);
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint("http://api.themoviedb.org/3")
-                .setRequestInterceptor(request -> {
-                    request.addEncodedQueryParam("api_key", BuildConfig.API_KEY);
-                })
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://api.themoviedb.org/3/")
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        MoviesApiService service = restAdapter.create(MoviesApiService.class);
-        service.getPopularShows(new Callback<MovieResult>() {
+        MoviesApiService service = retrofit.create(MoviesApiService.class);
+        service.getPopularShows(BuildConfig.API_KEY).enqueue(new Callback<MovieResult>() {
             @Override
-            public void success(MovieResult movieResult, Response response) {
-                mAdapter.setMovieList(movieResult.getResults());
+            public void onResponse(Call<MovieResult> call, Response<MovieResult> response) {
+                MovieResult movieResult = response.body();
+                mAdapter.setMovieList(movieResult.getMovies());
             }
 
             @Override
-            public void failure(RetrofitError error) {
-                error.printStackTrace();
+            public void onFailure(Call<MovieResult> call, Throwable t) {
+
             }
         });
         return v;
