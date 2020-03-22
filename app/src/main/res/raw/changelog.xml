@@ -1,0 +1,52 @@
+<changelog>
+    <release
+        versionCode="6"
+        versionName="v0.9.6">
+        <info>Library section Depreciated</info>
+        <bugfix>Fix Torrent Search</bugfix>
+        <bugfix>Fix Torrent Streaming in Android 10</bugfix>
+        <bugfix>iFrame Full-Screen fix</bugfix>
+    </release>
+    <release
+        versionCode="5"
+        versionName="v0.9.5.1">
+        <info>Library section to save watchlisted media Coming Soon</info>
+        <new>Add Intro</new>
+        <new>Add Splash</new>
+        <bugfix>iFrame player improvements</bugfix>
+    </release>
+    <release
+        versionCode="4"
+        versionName="v0.9.5">
+        <new>Plus Mode for TV Show torrents: The seeds on an single episode of a show is often low
+            seeded, with Plus Mode 'complete season' torrents are fetched which has significantly
+            high number of seeds compared to the former
+        </new>
+        <new>Add Changelog and About Section</new>
+        <bugfix>Search improvements</bugfix>
+        <bugfix>Minor Layout improvements</bugfix>
+    </release>
+    <release
+        versionCode="3"
+        versionName="v0.9.2">
+        <new>Torrent streaming support</new>
+        <new>Unofficial PirateBay Api to fetch the list of torrents</new>
+        <new>iFrame viewer for direct video sources</new>
+        <bugfix>Minor fixes to search</bugfix>
+        <info>Migrated to AndroidX</info>
+    </release>
+    <release
+        versionCode="2"
+        versionName="v0.9.0">
+        <new>Added VidStreaming, Vplus, ODB and VidSrc as sources</new>
+        <new>New updated layout with material CardViews</new>
+        <info>Maps the metadata with the source and opens it in browser</info>
+        <bugfix>ClearText Traffic fix for Pie</bugfix>
+    </release>
+    <release
+        versionCode="1"
+        versionName="Initial Release">
+        <info>First Release</info>
+        <new type="summary">Uses TMDB Api with basic functionality</new>
+    </release>
+</changelog>
