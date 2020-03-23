@@ -158,25 +158,31 @@ public class InfoPage extends AppCompatActivity {
                     } else {
                         imdb = result.get("imdb_id").getAsString();
                     }
-                    play.setOnClickListener(v -> playVidSrc(imdb));
+                    play.setOnClickListener(v -> playGDP(imdb));
                     play.setOnLongClickListener(v -> {
                         PopupMenu popupMenu = new PopupMenu(InfoPage.this, play);
                         popupMenu.getMenuInflater()
                                 .inflate(R.menu.play_menu, popupMenu.getMenu());
                         popupMenu.setOnMenuItemClickListener(item -> {
-                            if (item.getTitle().toString().equals("VideoSpider")) {
-                                playVideoSpider();
-                                return true;
-                            } else if (item.getTitle().toString().equals("ODB")) {
-                                playODB(imdb);
-                                return true;
-                            } else if (item.getTitle().toString().equals("Vplus")) {
-                                playVplus(imdb);
-                                return true;
-                            } else {
-                                playVidSrc(imdb);
-                                return true;
+                            String playitem = item.getTitle().toString();
+                            switch (playitem) {
+                                case "VideoSpider":
+                                    playVideoSpider();
+                                    return true;
+                                case "GDrivePlayer":
+                                    playGDP(imdb);
+                                    return true;
+                                case "123Files":
+                                    play123();
+                                    return true;
+                                case "Free Streaming":
+                                    playFS();
+                                    break;
+                                default:
+                                    playVidSrc(imdb);
+                                    return true;
                             }
+                            return false;
                         });
                         popupMenu.show();
                         return true;
@@ -198,7 +204,49 @@ public class InfoPage extends AppCompatActivity {
                 });
     }
 
-    void playVideoSpider() {
+    private void playGDP(String imdb) {
+        String uri;
+        if (status.equals("TV")) {
+            uri = "https://database.gdriveplayer.us/player.php?type=series&imdb=" + imdb + "&season=" + season.getText().toString() + "&episode=" + episode.getText().toString();
+        } else {
+            uri = "http://database.gdriveplayer.us/player.php?imdb=" + imdb;
+        }
+        if (aSwitch.isChecked()) {
+            iframe(uri);
+        } else {
+            browsa(uri);
+        }
+    }
+
+    private void play123() {
+        String uri;
+        if (status.equals("TV")) {
+            uri = "https://123files.club/imdb/tmdb/tv/?id=" + tmdbid + "&s=" + season.getText().toString() + "&e=" + episode.getText().toString();
+        } else {
+            uri = "https://123files.club/imdb/tmdb/movie/?id=" + tmdbid;
+        }
+        if (aSwitch.isChecked()) {
+            iframe(uri);
+        } else {
+            browsa(uri);
+        }
+    }
+
+    private void playFS() {
+        String uri;
+        if (status.equals("TV")) {
+            uri = "https://fsapi.xyz/tv-tmdb/" + tmdbid + "-" + season.getText().toString() + "-" + episode.getText().toString();
+        } else {
+            uri = "https://fsapi.xyz/tmdb-movie/" + tmdbid;
+        }
+        if (aSwitch.isChecked()) {
+            iframe(uri);
+        } else {
+            browsa(uri);
+        }
+    }
+
+    private void playVideoSpider() {
         String loader;
         if (status.equals("TV")) {
             loader = "https://videospider.stream/personal?key=" + BuildConfig.SPIDER_KEY + "&video_id=" + tmdbid + "&tmdb=1&tv=1&s=" + season.getText().toString() + "&e=" + episode.getText().toString();
@@ -212,30 +260,7 @@ public class InfoPage extends AppCompatActivity {
         }
     }
 
-    void playODB(String finalImdb) {
-        String url;
-        if (status.equals("TV")) {
-            url = "https://api.odb.to/embed?imdb_id=" + finalImdb + "&s=" + season.getText().toString() + "&e=" + episode.getText().toString() + "&cc=eng";
-        } else {
-            url = "https://api.odb.to/embed?imdb_id=" + finalImdb + "&cc=eng";
-        }
-        if (aSwitch.isChecked()) {
-            iframe(url);
-        } else {
-            browsa(url);
-        }
-    }
-
-    void playVplus(String finalImdb) {
-        String url = "http://vplus.ucoz.com/" + finalImdb;
-        if (aSwitch.isChecked()) {
-            iframe(url);
-        } else {
-            browsa(url);
-        }
-    }
-
-    void playVidSrc(String finalImdb) {
+    private void playVidSrc(String finalImdb) {
         String uri;
         if (status.equals("TV")) {
             uri = "https://vidsrc.me/embed/" + finalImdb + "/" + season.getText().toString() + "-" + episode.getText().toString() + "/";

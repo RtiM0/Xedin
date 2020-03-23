@@ -4,13 +4,16 @@
         android:id="@+id/Videospider"
         android:title="VideoSpider" />
     <item
-        android:id="@+id/odb"
-        android:title="ODB" />
-    <item
-        android:id="@+id/Vplus"
-        android:title="Vplus" />
-    <item
         android:id="@+id/vidsrc"
         android:title="VidSource" />
+    <item
+        android:id="@+id/gdriveplayer"
+        android:title="GDrivePlayer" />
+    <item
+        android:id="@+id/one23files"
+        android:title="123Files" />
+    <item
+        android:id="@+id/fs"
+        android:title="Free Streaming" />
 
 </menu>
