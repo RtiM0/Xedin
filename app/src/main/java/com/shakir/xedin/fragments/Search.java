@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.shakir.xedin.BuildConfig;
 import com.shakir.xedin.R;
 import com.shakir.xedin.adapters.MoviesAdapter;
-import com.shakir.xedin.interfaces.MoviesApiService;
+import com.shakir.xedin.interfaces.TMDBApiService;
 import com.shakir.xedin.models.Movie;
 import com.shakir.xedin.utils.MovieResult;
 
@@ -70,7 +70,7 @@ public class Search extends Fragment {
                     .baseUrl("http://api.themoviedb.org/3/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
-            MoviesApiService service = retrofit.create(MoviesApiService.class);
+            TMDBApiService service = retrofit.create(TMDBApiService.class);
             if (mode == 0) {
                 service.getSearchMovies(BuildConfig.API_KEY, searcher.getText().toString())
                         .enqueue(new Callback<MovieResult>() {

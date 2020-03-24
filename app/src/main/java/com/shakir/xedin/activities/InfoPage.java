@@ -23,11 +23,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
 import androidx.palette.graphics.Palette;
 
 import com.koushikdutta.ion.Ion;
 import com.shakir.xedin.BuildConfig;
 import com.shakir.xedin.R;
+import com.shakir.xedin.fragments.episodesFragment;
 import com.shakir.xedin.utils.FullScreenClient;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -145,6 +147,11 @@ public class InfoPage extends AppCompatActivity {
             imdbSources("https://api.themoviedb.org/3/movie/" + tmdbid + "/external_ids?api_key=" + BuildConfig.API_KEY);
         } else {
             imdbSources("http://api.themoviedb.org/3/tv/" + tmdbid + "/external_ids?api_key=" + BuildConfig.API_KEY);
+            Bundle bundle = new Bundle();
+            bundle.putInt("tmdb",tmdbid);
+            Fragment details = new episodesFragment();
+            details.setArguments(bundle);
+            getSupportFragmentManager().beginTransaction().add(R.id.tvdetails,details,"1").commit();
         }
     }
 
@@ -158,7 +165,7 @@ public class InfoPage extends AppCompatActivity {
                     } else {
                         imdb = result.get("imdb_id").getAsString();
                     }
-                    play.setOnClickListener(v -> playGDP(imdb));
+                    play.setOnClickListener(v -> playVidSrc(imdb));
                     play.setOnLongClickListener(v -> {
                         PopupMenu popupMenu = new PopupMenu(InfoPage.this, play);
                         popupMenu.getMenuInflater()
