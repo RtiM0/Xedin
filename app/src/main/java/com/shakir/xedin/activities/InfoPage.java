@@ -158,7 +158,7 @@ public class InfoPage extends AppCompatActivity {
                     } else {
                         imdb = result.get("imdb_id").getAsString();
                     }
-                    play.setOnClickListener(v -> playGDP(imdb));
+                    play.setOnClickListener(v -> playVidSrc(imdb));
                     play.setOnLongClickListener(v -> {
                         PopupMenu popupMenu = new PopupMenu(InfoPage.this, play);
                         popupMenu.getMenuInflater()

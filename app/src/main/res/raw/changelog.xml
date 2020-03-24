@@ -3,8 +3,11 @@
         versionCode="6"
         date="03/20"
         versionName="v0.9.6">
-        <info>Library section Depreciated</info>
+        <info>Library section depreciated</info>
+        <info>Vplus and ODB depreciated</info>
         <new>Whole app rebased for efficient load times</new>
+        <new>Added three new sources</new>
+        <bugfix>VideoSpider fixed</bugfix>
         <bugfix>Fix Torrent Search</bugfix>
         <bugfix>Fix Torrent Streaming in Android 9+</bugfix>
         <bugfix>iFrame Full-Screen fix</bugfix>
