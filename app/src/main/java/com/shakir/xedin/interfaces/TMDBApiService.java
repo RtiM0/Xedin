@@ -1,5 +1,6 @@
 package com.shakir.xedin.interfaces;
 
+import com.shakir.xedin.models.MediaDetail;
 import com.shakir.xedin.utils.MovieResult;
 import com.shakir.xedin.utils.TVSeason;
 
@@ -7,6 +8,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 
 public interface TMDBApiService {
     @GET("movie/popular")
@@ -23,5 +25,8 @@ public interface TMDBApiService {
 
     @GET("tv/{tv_id}/season/{season_number}")
     Call<TVSeason> getEpisodes(@Path("tv_id") int tvid,@Path("season_number") int season,@Query("api_key") String apiKey);
+
+    @GET
+    Call<MediaDetail> getDetail(@Url String url);
 }
 

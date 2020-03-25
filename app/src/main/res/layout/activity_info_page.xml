@@ -142,11 +142,20 @@
                 android:textColor="@android:color/white"
                 android:visibility="gone" />
 
+            <Spinner
+                android:id="@+id/seasonSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/description"
+                android:background="@android:color/black"
+                android:padding="2dp"
+                android:visibility="gone" />
+
             <FrameLayout
                 android:id="@+id/tvdetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/description"/>
+                android:layout_below="@id/seasonSpinner" />
         </RelativeLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

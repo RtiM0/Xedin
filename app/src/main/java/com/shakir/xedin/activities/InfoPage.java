@@ -13,26 +13,36 @@ import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
 import androidx.palette.graphics.Palette;
 
-import com.koushikdutta.ion.Ion;
 import com.shakir.xedin.BuildConfig;
 import com.shakir.xedin.R;
 import com.shakir.xedin.fragments.episodesFragment;
+import com.shakir.xedin.interfaces.TMDBApiService;
+import com.shakir.xedin.models.MediaDetail;
 import com.shakir.xedin.utils.FullScreenClient;
+import com.shakir.xedin.utils.TVSeason;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class InfoPage extends AppCompatActivity {
 
@@ -51,6 +61,17 @@ public class InfoPage extends AppCompatActivity {
     private Button torrents;
     private int immersive = 0;
     private Switch bSwitch;
+    private Spinner seasoner;
+    private int flag = 0;
+    private FragmentRefreshListener fragmentRefreshListener;
+
+    public FragmentRefreshListener getFragmentRefreshListener() {
+        return fragmentRefreshListener;
+    }
+
+    public void setFragmentRefreshListener(FragmentRefreshListener fragmentRefreshListener) {
+        this.fragmentRefreshListener = fragmentRefreshListener;
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -77,6 +98,7 @@ public class InfoPage extends AppCompatActivity {
         torrents = findViewById(R.id.torrent);
         bSwitch = findViewById(R.id.switch2);
         parental = findViewById(R.id.parental);
+        seasoner = findViewById(R.id.seasonSpinner);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         if (name == null) {
             tet.setText(title);
@@ -143,72 +165,136 @@ public class InfoPage extends AppCompatActivity {
         });
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setUseWideViewPort(true);
-        if (status.equals("Movie")) {
-            imdbSources("https://api.themoviedb.org/3/movie/" + tmdbid + "/external_ids?api_key=" + BuildConfig.API_KEY);
-        } else {
-            imdbSources("http://api.themoviedb.org/3/tv/" + tmdbid + "/external_ids?api_key=" + BuildConfig.API_KEY);
-            Bundle bundle = new Bundle();
-            bundle.putInt("tmdb",tmdbid);
-            Fragment details = new episodesFragment();
-            details.setArguments(bundle);
-            getSupportFragmentManager().beginTransaction().add(R.id.tvdetails,details,"1").commit();
-        }
+        getDetails();
     }
 
-    void imdbSources(String url) {
-        Ion.with(this)
-                .load(url)
-                .asJsonObject()
-                .setCallback((e, result) -> {
-                    if (status.equals("Movie")) {
-                        imdb = result.get("imdb_id").getAsString();
-                    } else {
-                        imdb = result.get("imdb_id").getAsString();
-                    }
-                    play.setOnClickListener(v -> playVidSrc(imdb));
-                    play.setOnLongClickListener(v -> {
-                        PopupMenu popupMenu = new PopupMenu(InfoPage.this, play);
-                        popupMenu.getMenuInflater()
-                                .inflate(R.menu.play_menu, popupMenu.getMenu());
-                        popupMenu.setOnMenuItemClickListener(item -> {
-                            String playitem = item.getTitle().toString();
-                            switch (playitem) {
-                                case "VideoSpider":
-                                    playVideoSpider();
-                                    return true;
-                                case "GDrivePlayer":
-                                    playGDP(imdb);
-                                    return true;
-                                case "123Files":
-                                    play123();
-                                    return true;
-                                case "Free Streaming":
-                                    playFS();
-                                    break;
-                                default:
-                                    playVidSrc(imdb);
-                                    return true;
-                            }
-                            return false;
-                        });
-                        popupMenu.show();
-                        return true;
-                    });
-                    torrents.setOnClickListener(v -> {
-                        Intent intent = new Intent(InfoPage.this, TorrentStreamer.class);
-                        //intent.putExtra("magnet", magnet);
-                        intent.putExtra("title", tet.getText().toString());
-                        intent.putExtra("status", status);
-                        intent.putExtra("imdb", imdb);
-                        intent.putExtra("tmdbid", tmdbid);
-                        intent.putExtra("plusmo", bSwitch.isChecked());
-                        if (status.equals("TV")) {
-                            intent.putExtra("season", season.getText().toString());
-                            intent.putExtra("episode", episode.getText().toString());
+    void getDetails() {
+        String agent;
+        if (status.equals("Movie")) {
+            agent = "movie";
+        } else {
+            agent = "tv";
+        }
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://api.themoviedb.org/3/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        TMDBApiService service = retrofit.create(TMDBApiService.class);
+        service.getDetail("https://api.themoviedb.org/3/" + agent + "/" + tmdbid + "?" +
+                "api_key=" + BuildConfig.API_KEY +
+                "&append_to_response=external_ids,season%2F1")
+                .enqueue(new Callback<MediaDetail>() {
+                    @Override
+                    public void onResponse(Call<MediaDetail> call, Response<MediaDetail> response) {
+                        MediaDetail mediaDetail = response.body();
+                        imdb = mediaDetail.getImdb();
+                        if (!status.equals("Movie")) {
+                            String[] mSeasons = mediaDetail.sNames();
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, mSeasons);
+                            arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+                            seasoner.setAdapter(arrayAdapter);
+                            seasoner.setVisibility(View.VISIBLE);
+                            seasoner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                Bundle bundle = new Bundle();
+                                episodesFragment details = new episodesFragment();
+
+                                @Override
+                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                    if (position == 0) {
+                                        if (flag == 0) {
+                                            details.setData(mediaDetail.getTvSeason());
+                                            details.setArguments(bundle);
+                                            getSupportFragmentManager().beginTransaction().add(R.id.tvdetails, details, "1").commit();
+                                            flag = 1;
+                                        } else {
+                                            details.setData(mediaDetail.getTvSeason());
+                                            if (getFragmentRefreshListener() != null) {
+                                                getFragmentRefreshListener().onRefresh();
+                                            }
+                                        }
+                                    } else {
+                                        Retrofit retrofit = new Retrofit.Builder()
+                                                .baseUrl("http://api.themoviedb.org/3/")
+                                                .addConverterFactory(GsonConverterFactory.create())
+                                                .build();
+                                        TMDBApiService service = retrofit.create(TMDBApiService.class);
+                                        service.getEpisodes(tmdbid, position + 1, BuildConfig.API_KEY).enqueue(new Callback<TVSeason>() {
+                                            @Override
+                                            public void onResponse(Call<TVSeason> call, Response<TVSeason> response) {
+                                                TVSeason tvSeason = response.body();
+                                                details.setData(tvSeason);
+                                                if (getFragmentRefreshListener() != null) {
+                                                    getFragmentRefreshListener().onRefresh();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<TVSeason> call, Throwable t) {
+
+                                            }
+                                        });
+                                    }
+                                }
+
+                                @Override
+                                public void onNothingSelected(AdapterView<?> parent) {
+
+                                }
+                            });
                         }
-                        InfoPage.this.startActivity(intent);
-                    });
+                        enableButtons();
+                    }
+
+                    @Override
+                    public void onFailure(Call<MediaDetail> call, Throwable t) {
+
+                    }
                 });
+    }
+
+    private void enableButtons() {
+        play.setOnClickListener(v -> playVidSrc(imdb));
+        play.setOnLongClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(InfoPage.this, play);
+            popupMenu.getMenuInflater()
+                    .inflate(R.menu.play_menu, popupMenu.getMenu());
+            popupMenu.setOnMenuItemClickListener(item -> {
+                String playitem = item.getTitle().toString();
+                switch (playitem) {
+                    case "VideoSpider":
+                        playVideoSpider();
+                        return true;
+                    case "GDrivePlayer":
+                        playGDP(imdb);
+                        return true;
+                    case "123Files":
+                        play123();
+                        return true;
+                    case "Free Streaming":
+                        playFS();
+                        break;
+                    default:
+                        playVidSrc(imdb);
+                        return true;
+                }
+                return false;
+            });
+            popupMenu.show();
+            return true;
+        });
+        torrents.setOnClickListener(v -> {
+            Intent intent = new Intent(InfoPage.this, TorrentStreamer.class);
+            intent.putExtra("title", tet.getText().toString());
+            intent.putExtra("status", status);
+            intent.putExtra("imdb", imdb);
+            intent.putExtra("tmdbid", tmdbid);
+            intent.putExtra("plusmo", bSwitch.isChecked());
+            if (status.equals("TV")) {
+                intent.putExtra("season", season.getText().toString());
+                intent.putExtra("episode", episode.getText().toString());
+            }
+            InfoPage.this.startActivity(intent);
+        });
     }
 
     private void playGDP(String imdb) {
@@ -335,5 +421,9 @@ public class InfoPage extends AppCompatActivity {
             hideSystemUI();
         }
         super.onResume();
+    }
+
+    public interface FragmentRefreshListener {
+        void onRefresh();
     }
 }
