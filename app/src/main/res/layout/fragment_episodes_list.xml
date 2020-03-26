@@ -6,7 +6,7 @@
     android:name="com.shakir.xedin.episodesFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
+    android:background="#0f0f19"
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
     app:layoutManager="LinearLayoutManager"

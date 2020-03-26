@@ -44,6 +44,7 @@ public class episodesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        int color = getArguments().getInt("color", 0);
         View view = inflater.inflate(R.layout.fragment_episodes_list, container, false);
 
         // Set the adapter
@@ -53,7 +54,9 @@ public class episodesFragment extends Fragment {
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
             EpisodesAdapter episodesAdapter = new EpisodesAdapter(mListener);
             recyclerView.setAdapter(episodesAdapter);
-            recyclerView.setNestedScrollingEnabled(false);
+            if (color != 0) {
+                recyclerView.setBackgroundColor(color);
+            }
             episodesAdapter.setEpisodeList(tvSeason.getEpisodes());
             ((InfoPage) Objects.requireNonNull(getActivity())).setFragmentRefreshListener(() -> {
                 episodesAdapter.setEpisodeList(tvSeason.getEpisodes());

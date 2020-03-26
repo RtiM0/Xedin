@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,9 +18,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -48,7 +48,6 @@ public class InfoPage extends AppCompatActivity {
 
     private ConstraintLayout parental;
     private TextView tet;
-    private ImageView backd;
     private TextView disc;
     private Button play;
     private EditText season;
@@ -63,6 +62,7 @@ public class InfoPage extends AppCompatActivity {
     private Switch bSwitch;
     private Spinner seasoner;
     private int flag = 0;
+    private int detailColor = 0;
     private FragmentRefreshListener fragmentRefreshListener;
 
     public FragmentRefreshListener getFragmentRefreshListener() {
@@ -73,23 +73,20 @@ public class InfoPage extends AppCompatActivity {
         this.fragmentRefreshListener = fragmentRefreshListener;
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressLint({"SetJavaScriptEnabled", "SourceLockedOrientationActivity"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         String title = intent.getStringExtra("title");
         String name = intent.getStringExtra("tvname");
-        String back = intent.getStringExtra("backdrop");
         String desc = intent.getStringExtra("desc");
         tmdbid = intent.getIntExtra("tmdbid", -1);
         String poster = intent.getStringExtra("poster");
         setContentView(R.layout.activity_info_page);
         tet = findViewById(R.id.titel);
-        backd = findViewById(R.id.backd);
-        ImageView post = findViewById(R.id.postar);
         disc = findViewById(R.id.description);
-        RelativeLayout backs = findViewById(R.id.backs);
+        LinearLayout backs = findViewById(R.id.backs);
         play = findViewById(R.id.playbutton);
         season = findViewById(R.id.season);
         episode = findViewById(R.id.episode);
@@ -114,30 +111,33 @@ public class InfoPage extends AppCompatActivity {
         Picasso.get()
                 .load(poster)
                 .placeholder(R.color.colorAccent)
-                .into(post);
-        Picasso.get()
-                .load(back)
-                .placeholder(R.color.colorAccent)
                 .into(new Target() {
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        assert backd != null;
-                        backd.setImageBitmap(bitmap);
+                        findViewById(R.id.posta).setBackground(new BitmapDrawable(getResources(), bitmap));
                         Palette.from(bitmap)
                                 .generate(palette -> {
                                     try {
-                                        assert palette != null;
-                                        Palette.Swatch textSwatch = palette.getVibrantSwatch();
-                                        assert textSwatch != null;
-                                        parental.setBackgroundColor(textSwatch.getRgb());
-                                        tet.setTextColor(textSwatch.getBodyTextColor());
-                                        disc.setTextColor(textSwatch.getTitleTextColor());
-                                        aSwitch.setTextColor(textSwatch.getBodyTextColor());
-                                        aSwitch.setHighlightColor(textSwatch.getRgb());
-                                        bSwitch.setTextColor(textSwatch.getBodyTextColor());
-                                        bSwitch.setHighlightColor(textSwatch.getRgb());
-                                        getWindow().setStatusBarColor(textSwatch.getRgb());
-                                        getWindow().setNavigationBarColor(textSwatch.getRgb());
+                                        Palette.Swatch darkVibrantSwatch = palette.getDarkVibrantSwatch();
+                                        Palette.Swatch darkMutedSwatch = palette.getDarkMutedSwatch();
+                                        parental.setBackgroundColor(darkVibrantSwatch.getRgb());
+                                        tet.setTextColor(darkVibrantSwatch.getTitleTextColor());
+                                        disc.setTextColor(darkVibrantSwatch.getBodyTextColor());
+                                        season.setHintTextColor(darkVibrantSwatch.getBodyTextColor());
+                                        episode.setHintTextColor(darkVibrantSwatch.getBodyTextColor());
+                                        aSwitch.setTextColor(darkVibrantSwatch.getBodyTextColor());
+                                        aSwitch.setHighlightColor(darkVibrantSwatch.getRgb());
+                                        bSwitch.setTextColor(darkVibrantSwatch.getBodyTextColor());
+                                        bSwitch.setHighlightColor(darkVibrantSwatch.getRgb());
+                                        seasoner.setBackgroundColor(darkMutedSwatch.getRgb());
+                                        detailColor = darkMutedSwatch.getRgb();
+                                        getWindow().setStatusBarColor(darkVibrantSwatch.getRgb());
+                                        play.setTextColor(darkVibrantSwatch.getRgb());
+                                        torrents.setTextColor(darkVibrantSwatch.getRgb());
+                                        if (status.equals("Movie")) {
+                                            darkMutedSwatch = darkVibrantSwatch;
+                                        }
+                                        getWindow().setNavigationBarColor(darkMutedSwatch.getRgb());
                                     } catch (NullPointerException e) {
                                         e.printStackTrace();
                                     }
@@ -146,7 +146,7 @@ public class InfoPage extends AppCompatActivity {
 
                     @Override
                     public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-
+                        e.printStackTrace();
                     }
 
                     @Override
@@ -194,16 +194,16 @@ public class InfoPage extends AppCompatActivity {
                             arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
                             seasoner.setAdapter(arrayAdapter);
                             seasoner.setVisibility(View.VISIBLE);
+                            episodesFragment details = new episodesFragment();
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("color", detailColor);
+                            details.setData(mediaDetail.getTvSeason());
+                            details.setArguments(bundle);
                             seasoner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                Bundle bundle = new Bundle();
-                                episodesFragment details = new episodesFragment();
-
                                 @Override
                                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                     if (position == 0) {
                                         if (flag == 0) {
-                                            details.setData(mediaDetail.getTvSeason());
-                                            details.setArguments(bundle);
                                             getSupportFragmentManager().beginTransaction().add(R.id.tvdetails, details, "1").commit();
                                             flag = 1;
                                         } else {

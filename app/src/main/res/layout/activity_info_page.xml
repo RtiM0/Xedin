@@ -15,55 +15,117 @@
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/player">
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/backs"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/backd"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_alignParentTop="true"
-                android:scaleType="fitXY"
-                android:visibility="gone" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/posta"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/backd"
-                android:layout_alignParentLeft="true"
-                android:layout_margin="8dp"
-                android:elevation="4dp">
+                android:orientation="horizontal"
+                android:weightSum="2">
 
-                <ImageView
-                    android:id="@+id/postar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </com.google.android.material.card.MaterialCardView>
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1">
 
-            <TextView
-                android:id="@+id/titel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/backd"
-                android:layout_toRightOf="@id/posta"
-                android:textAlignment="center"
-                android:textAppearance="@android:style/TextAppearance.Large"
-                android:textColor="@android:color/white"
-                android:textStyle="bold" />
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/posta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:elevation="4dp"
+                        app:cardBackgroundColor="#0000" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/titel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:textAlignment="center"
+                        android:textAppearance="@android:style/TextAppearance.Large"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/season"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/titel"
+                        android:hint="Season"
+                        android:inputType="number"
+                        android:visibility="gone" />
+
+                    <EditText
+                        android:id="@+id/episode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/season"
+                        android:hint="Episode"
+                        android:inputType="number"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/playbutton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/episode"
+                        android:text="play" />
+
+                    <Button
+                        android:id="@+id/torrent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/playbutton"
+                        android:text="Torrent" />
+
+                    <Switch
+                        android:id="@+id/switch1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/episode"
+                        android:layout_margin="4dp"
+                        android:layout_toEndOf="@id/playbutton"
+                        android:checked="true"
+                        android:text="iFrame"
+                        android:textAppearance="@android:style/TextAppearance.Small"
+                        android:textColor="@android:color/white"
+                        android:textOff="Browser"
+                        android:textOn="iFrame" />
+
+                    <Switch
+                        android:id="@+id/switch2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/switch1"
+                        android:layout_margin="4dp"
+                        android:layout_toEndOf="@id/torrent"
+                        android:checked="true"
+                        android:text="Plus mode for TV"
+                        android:textAppearance="@android:style/TextAppearance.Small"
+                        android:textColor="@android:color/white"
+                        android:visibility="gone" />
+                </RelativeLayout>
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/distitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/posta"
                 android:layout_margin="16dp"
                 android:text="Overview"
                 android:textAppearance="@android:style/TextAppearance.Medium"
@@ -74,80 +136,15 @@
                 android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/distitle"
                 android:layout_margin="8dp"
                 android:textAppearance="@android:style/TextAppearance.Small"
                 android:textColor="@android:color/white" />
-
-            <EditText
-                android:id="@+id/season"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/titel"
-                android:layout_toRightOf="@id/posta"
-                android:hint="Season"
-                android:inputType="number"
-                android:visibility="gone" />
-
-            <EditText
-                android:id="@+id/episode"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/season"
-                android:layout_toRightOf="@id/posta"
-                android:hint="Episode"
-                android:inputType="number"
-                android:visibility="gone" />
-
-            <Button
-                android:id="@+id/playbutton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/episode"
-                android:layout_toRightOf="@id/posta"
-                android:text="play" />
-
-            <Button
-                android:id="@+id/torrent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/playbutton"
-                android:layout_toRightOf="@id/posta"
-                android:text="Torrent" />
-
-            <Switch
-                android:id="@+id/switch1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/episode"
-                android:layout_margin="8dp"
-                android:layout_toRightOf="@id/playbutton"
-                android:checked="true"
-                android:text="iFrame"
-                android:textAppearance="@android:style/TextAppearance.Small"
-                android:textColor="@android:color/white"
-                android:textOff="Browser"
-                android:textOn="iFrame" />
-
-            <Switch
-                android:id="@+id/switch2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/playbutton"
-                android:layout_margin="8dp"
-                android:layout_toRightOf="@id/torrent"
-                android:checked="true"
-                android:text="Plus mode for TV"
-                android:textAppearance="@android:style/TextAppearance.Small"
-                android:textColor="@android:color/white"
-                android:visibility="gone" />
 
             <Spinner
                 android:id="@+id/seasonSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/description"
-                android:background="@android:color/black"
+                android:background="#0f0f19"
                 android:padding="2dp"
                 android:visibility="gone" />
 
@@ -155,7 +152,7 @@
                 android:id="@+id/tvdetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/seasonSpinner" />
-        </RelativeLayout>
-    </ScrollView>
+                android:nestedScrollingEnabled="false" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
