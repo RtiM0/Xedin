@@ -27,12 +27,12 @@ public class AboutFragment extends Fragment {
         return new AboutPage(getContext())
                 .isRTL(false)
                 .setImage(R.drawable.ic_launcher_foreground)
-                .setDescription("A light application that retrieves data from TMDB, with various media streaming features")
-                .addItem(new Element().setTitle("Version 0.9.6"))
+                .setDescription("A light application that offers various media streaming features")
+                .addItem(new Element().setTitle("Version 0.9.7"))
                 .addItem(new Element().setTitle("Made with <3 by Mustafa Shakir (RtiM0)"))
                 .addGroup("Connect")
                 .addEmail("shakirmustafa58@gmail.com", "Mail")
-                .addTwitter("RtiM0", "Tweet")
+                .addTwitter("RtiM0", "Twitter")
                 .addGitHub("RtiM0", "Github")
                 .create();
     }

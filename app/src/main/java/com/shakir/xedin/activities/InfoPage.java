@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.NestedScrollView;
 import androidx.palette.graphics.Palette;
 
 import com.shakir.xedin.BuildConfig;
@@ -45,8 +46,8 @@ public class InfoPage extends AppCompatActivity {
     private TextView tet;
     private TextView disc;
     private Button play;
-    private EditText season;
-    private EditText episode;
+    public EditText season;
+    public EditText episode;
     private String status;
     private WebView webView;
     private int tmdbid;
@@ -185,6 +186,12 @@ public class InfoPage extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    public void performPlay() {
+        play.performClick();
+        NestedScrollView scrollView = findViewById(R.id.scrollViewInfo);
+        scrollView.smoothScrollTo(0, 0);
     }
 
     private void enableButtons() {

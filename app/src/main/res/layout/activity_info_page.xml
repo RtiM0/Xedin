@@ -16,6 +16,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollViewInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/player">
@@ -30,6 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:baselineAligned="false"
                 android:weightSum="2">
 
                 <RelativeLayout
@@ -73,12 +75,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/titel"
+                        android:textColor="@android:color/white"
                         android:hint="Season"
                         android:inputType="number"
                         android:visibility="gone" />
 
                     <EditText
                         android:id="@+id/episode"
+                        android:textColor="@android:color/white"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/season"

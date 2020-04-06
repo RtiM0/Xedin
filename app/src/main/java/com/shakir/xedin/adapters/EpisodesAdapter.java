@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.shakir.xedin.R;
-import com.shakir.xedin.fragments.episodesFragment.OnListFragmentInteractionListener;
+import com.shakir.xedin.fragments.episodesFragment;
 import com.shakir.xedin.models.TVEpisode;
 import com.squareup.picasso.Picasso;
 
@@ -21,20 +21,15 @@ import java.util.List;
 public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.ViewHolder> {
 
     private final List<TVEpisode> episodes;
-    private final OnListFragmentInteractionListener mListener;
+    private final episodesFragment.OnListFragmentInteractionListener mListener;
     private Context mContext;
+    private EventListener listener;
 
-    public EpisodesAdapter(OnListFragmentInteractionListener listener, Context context) {
+    public EpisodesAdapter(episodesFragment.OnListFragmentInteractionListener mlistener, EventListener listener, Context context) {
         episodes = new ArrayList<>();
-        mListener = listener;
+        mListener = mlistener;
         mContext = context;
-    }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_episodes, parent, false);
-        return new ViewHolder(view);
+        this.listener = listener;
     }
 
     @Override
@@ -50,21 +45,31 @@ public class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.ViewHo
             if (null != mListener) {
                 mListener.onListFragmentInteraction(holder.mItem);
             }
-//            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//            View customView = inflater.inflate(R.layout.dialog_content,null);
-//            ImageView still = customView.findViewById(R.id.stillView);
-//            still.setImageDrawable(holder.mStill.getDrawable());
             BottomDialog dialog = new BottomDialog.Builder(mContext)
                     .setTitle(holder.mItem.getName())
                     .setContent(holder.mItem.getOverview())
-                    .setIcon(holder.mStill.getDrawable())
                     .setPositiveText("Play")
                     .setNegativeText("Torrent")
-//                    .setCustomView(customView)
+                    .onPositive(bottomDialog -> {
+                        listener.setTVData((position + 1), "play");
+                    })
+                    .onNegative(bottomDialog -> {
+                        listener.setTVData((position + 1), "torrent");
+                    })
                     .build();
-
             dialog.show();
         });
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.fragment_episodes, parent, false);
+        return new ViewHolder(view);
+    }
+
+    public interface EventListener {
+        void setTVData(int episode, String service);
     }
 
     @Override

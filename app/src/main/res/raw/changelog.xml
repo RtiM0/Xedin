@@ -1,5 +1,14 @@
 <changelog>
     <release
+        date="04/20"
+        versionCode="7"
+        versionName="v0.9.7">
+        <new>Add episodes navigator for TV Shows</new>
+        <new>InfoPage layout refactored</new>
+        <bugfix>App won't show blank results randomly</bugfix>
+        <bugfix>Other minor bug fixes and improvements</bugfix>
+    </release>
+    <release
         versionCode="6"
         date="03/20"
         versionName="v0.9.6">

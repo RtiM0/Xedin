@@ -44,18 +44,15 @@ public class MoviesAdapter extends RecyclerView.Adapter<MovieViewHolder> {
         final String desc = movie.getDescription();
         final String tvname = movie.getName();
         final int tmdbid = movie.getId();
-        holder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mContext, InfoPage.class);
-                intent.putExtra("title", title);
-                intent.putExtra("poster", poster);
-                intent.putExtra("backdrop", backdrop);
-                intent.putExtra("desc", desc);
-                intent.putExtra("tmdbid", tmdbid);
-                intent.putExtra("tvname", tvname);
-                mContext.startActivity(intent);
-            }
+        holder.imageView.setOnClickListener(v -> {
+            Intent intent = new Intent(mContext, InfoPage.class);
+            intent.putExtra("title", title);
+            intent.putExtra("poster", poster);
+            intent.putExtra("backdrop", backdrop);
+            intent.putExtra("desc", desc);
+            intent.putExtra("tmdbid", tmdbid);
+            intent.putExtra("tvname", tvname);
+            mContext.startActivity(intent);
         });
         // This is how we use Picasso to load images from the internet.
         Picasso.get()

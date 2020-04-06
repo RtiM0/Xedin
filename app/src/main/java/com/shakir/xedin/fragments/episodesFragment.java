@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.shakir.xedin.BuildConfig;
 import com.shakir.xedin.R;
+import com.shakir.xedin.activities.InfoPage;
 import com.shakir.xedin.adapters.EpisodesAdapter;
 import com.shakir.xedin.interfaces.TMDBApiService;
 import com.shakir.xedin.models.TVEpisode;
@@ -28,10 +29,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class episodesFragment extends Fragment {
+public class episodesFragment extends Fragment implements EpisodesAdapter.EventListener {
 
     private OnListFragmentInteractionListener mListener;
     private TVSeason tvSeason;
+    private int season;
 
     public episodesFragment() {
     }
@@ -56,7 +58,7 @@ public class episodesFragment extends Fragment {
         Context context = view.getContext();
         RecyclerView recyclerView = view.findViewById(R.id.list);
         recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
-        EpisodesAdapter episodesAdapter = new EpisodesAdapter(mListener, context);
+        EpisodesAdapter episodesAdapter = new EpisodesAdapter(mListener, this, context);
         recyclerView.setAdapter(episodesAdapter);
         if (color != 0) {
             recyclerView.setBackgroundColor(color);
@@ -83,10 +85,12 @@ public class episodesFragment extends Fragment {
 
                         @Override
                         public void onFailure(@NotNull Call<TVSeason> call, @NotNull Throwable t) {
+                            call.clone().enqueue(this);
                             t.printStackTrace();
                         }
                     });
                 }
+                season = position + 1;
             }
 
             @Override
@@ -95,6 +99,18 @@ public class episodesFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    public void setTVData(int episode, String service) {
+        InfoPage infoPage = (InfoPage) getActivity();
+        assert infoPage != null;
+        infoPage.season.setText((season + ""));
+        infoPage.episode.setText((episode + ""));
+        if (service.equals("play")) {
+            infoPage.performPlay();
+        } else {
+            infoPage.torrents.performClick();
+        }
     }
 
     @Override

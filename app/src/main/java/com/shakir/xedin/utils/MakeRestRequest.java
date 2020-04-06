@@ -61,6 +61,7 @@ public class MakeRestRequest implements Callback<MovieResult> {
 
     @Override
     public void onFailure(Call<MovieResult> call, Throwable t) {
+        call.clone().enqueue(this);
         t.printStackTrace();
     }
 }

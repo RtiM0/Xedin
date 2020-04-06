@@ -64,7 +64,7 @@ public class Search extends Fragment {
             if (mode == 0) {
                 makeRestRequest = new MakeRestRequest("Movie", query, mAdapter);
             } else {
-                makeRestRequest = new MakeRestRequest("TV", mAdapter);
+                makeRestRequest = new MakeRestRequest("TV", query, mAdapter);
             }
             makeRestRequest.makeRequest();
             mRecyclerView.setVisibility(View.VISIBLE);
