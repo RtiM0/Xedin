@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -14,13 +13,11 @@ import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -34,9 +31,7 @@ import com.shakir.xedin.fragments.episodesFragment;
 import com.shakir.xedin.interfaces.TMDBApiService;
 import com.shakir.xedin.models.MediaDetail;
 import com.shakir.xedin.utils.FullScreenClient;
-import com.shakir.xedin.utils.TVSeason;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,21 +52,10 @@ public class InfoPage extends AppCompatActivity {
     private int tmdbid;
     private String imdb;
     private Switch aSwitch;
-    private Button torrents;
+    public Button torrents;
     private int immersive = 0;
     private Switch bSwitch;
-    private Spinner seasoner;
-    private int flag = 0;
     private int detailColor = 0;
-    private FragmentRefreshListener fragmentRefreshListener;
-
-    public FragmentRefreshListener getFragmentRefreshListener() {
-        return fragmentRefreshListener;
-    }
-
-    public void setFragmentRefreshListener(FragmentRefreshListener fragmentRefreshListener) {
-        this.fragmentRefreshListener = fragmentRefreshListener;
-    }
 
     @SuppressLint({"SetJavaScriptEnabled", "SourceLockedOrientationActivity"})
     @Override
@@ -95,7 +79,6 @@ public class InfoPage extends AppCompatActivity {
         torrents = findViewById(R.id.torrent);
         bSwitch = findViewById(R.id.switch2);
         parental = findViewById(R.id.parental);
-        seasoner = findViewById(R.id.seasonSpinner);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         if (name == null) {
             tet.setText(title);
@@ -108,13 +91,14 @@ public class InfoPage extends AppCompatActivity {
             bSwitch.setVisibility(View.VISIBLE);
         }
         disc.setText(desc);
+        ImageView posta = findViewById(R.id.posta);
         Picasso.get()
                 .load(poster)
                 .placeholder(R.color.colorAccent)
-                .into(new Target() {
+                .into(posta, new com.squareup.picasso.Callback() {
                     @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        findViewById(R.id.posta).setBackground(new BitmapDrawable(getResources(), bitmap));
+                    public void onSuccess() {
+                        Bitmap bitmap = ((BitmapDrawable) posta.getDrawable()).getBitmap();
                         Palette.from(bitmap)
                                 .generate(palette -> {
                                     try {
@@ -129,7 +113,6 @@ public class InfoPage extends AppCompatActivity {
                                         aSwitch.setHighlightColor(darkVibrantSwatch.getRgb());
                                         bSwitch.setTextColor(darkVibrantSwatch.getBodyTextColor());
                                         bSwitch.setHighlightColor(darkVibrantSwatch.getRgb());
-                                        seasoner.setBackgroundColor(darkMutedSwatch.getRgb());
                                         detailColor = darkMutedSwatch.getRgb();
                                         getWindow().setStatusBarColor(darkVibrantSwatch.getRgb());
                                         play.setTextColor(darkVibrantSwatch.getRgb());
@@ -145,12 +128,7 @@ public class InfoPage extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                    public void onError(Exception e) {
 
                     }
                 });
@@ -190,57 +168,14 @@ public class InfoPage extends AppCompatActivity {
                         imdb = mediaDetail.getImdb();
                         if (!status.equals("Movie")) {
                             String[] mSeasons = mediaDetail.sNames();
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, mSeasons);
-                            arrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-                            seasoner.setAdapter(arrayAdapter);
-                            seasoner.setVisibility(View.VISIBLE);
                             episodesFragment details = new episodesFragment();
                             Bundle bundle = new Bundle();
                             bundle.putInt("color", detailColor);
+                            bundle.putStringArray("sNames", mSeasons);
+                            bundle.putInt("tmdb", tmdbid);
                             details.setData(mediaDetail.getTvSeason());
                             details.setArguments(bundle);
-                            seasoner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                @Override
-                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                    if (position == 0) {
-                                        if (flag == 0) {
-                                            getSupportFragmentManager().beginTransaction().add(R.id.tvdetails, details, "1").commit();
-                                            flag = 1;
-                                        } else {
-                                            details.setData(mediaDetail.getTvSeason());
-                                            if (getFragmentRefreshListener() != null) {
-                                                getFragmentRefreshListener().onRefresh();
-                                            }
-                                        }
-                                    } else {
-                                        Retrofit retrofit = new Retrofit.Builder()
-                                                .baseUrl("http://api.themoviedb.org/3/")
-                                                .addConverterFactory(GsonConverterFactory.create())
-                                                .build();
-                                        TMDBApiService service = retrofit.create(TMDBApiService.class);
-                                        service.getEpisodes(tmdbid, position + 1, BuildConfig.API_KEY).enqueue(new Callback<TVSeason>() {
-                                            @Override
-                                            public void onResponse(Call<TVSeason> call, Response<TVSeason> response) {
-                                                TVSeason tvSeason = response.body();
-                                                details.setData(tvSeason);
-                                                if (getFragmentRefreshListener() != null) {
-                                                    getFragmentRefreshListener().onRefresh();
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onFailure(Call<TVSeason> call, Throwable t) {
-
-                                            }
-                                        });
-                                    }
-                                }
-
-                                @Override
-                                public void onNothingSelected(AdapterView<?> parent) {
-
-                                }
-                            });
+                            getSupportFragmentManager().beginTransaction().add(R.id.tvdetails, details, "1").commit();
                         }
                         enableButtons();
                     }
@@ -421,9 +356,5 @@ public class InfoPage extends AppCompatActivity {
             hideSystemUI();
         }
         super.onResume();
-    }
-
-    public interface FragmentRefreshListener {
-        void onRefresh();
     }
 }

@@ -53,7 +53,7 @@ public class MediaDetail {
     }
 
     public String[] sNames() {
-        int size = getnSeasons();
+        int size = getSeasons().size();
         ArrayList<String> arrayList = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             if (getSeasons().get(i).getsNum() != 0) {

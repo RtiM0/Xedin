@@ -39,11 +39,18 @@
                     android:layout_weight="1">
 
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/posta"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:elevation="4dp"
-                        app:cardBackgroundColor="#0000" />
+                        app:cardBackgroundColor="#0000">
+
+                        <ImageView
+                            android:id="@+id/posta"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY" />
+                    </com.google.android.material.card.MaterialCardView>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -139,14 +146,6 @@
                 android:layout_margin="8dp"
                 android:textAppearance="@android:style/TextAppearance.Small"
                 android:textColor="@android:color/white" />
-
-            <Spinner
-                android:id="@+id/seasonSpinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#0f0f19"
-                android:padding="2dp"
-                android:visibility="gone" />
 
             <FrameLayout
                 android:id="@+id/tvdetails"
