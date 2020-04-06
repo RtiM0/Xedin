@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -195,47 +196,62 @@ public class InfoPage extends AppCompatActivity {
     }
 
     private void enableButtons() {
-        play.setOnClickListener(v -> playVidSrc(imdb));
+        play.setOnClickListener(v -> {
+            if(!season.getText().toString().equals("") && !episode.getText().toString().equals("")) {
+                playVidSrc(imdb);
+            }else{
+                Toast.makeText(this, "Please specify the season no. and episode no.", Toast.LENGTH_SHORT).show();
+            }
+        });
         play.setOnLongClickListener(v -> {
-            PopupMenu popupMenu = new PopupMenu(InfoPage.this, play);
-            popupMenu.getMenuInflater()
-                    .inflate(R.menu.play_menu, popupMenu.getMenu());
-            popupMenu.setOnMenuItemClickListener(item -> {
-                String playitem = item.getTitle().toString();
-                switch (playitem) {
-                    case "VideoSpider":
-                        playVideoSpider();
-                        return true;
-                    case "GDrivePlayer":
-                        playGDP(imdb);
-                        return true;
-                    case "123Files":
-                        play123();
-                        return true;
-                    case "Free Streaming":
-                        playFS();
-                        break;
-                    default:
-                        playVidSrc(imdb);
-                        return true;
-                }
-                return false;
-            });
-            popupMenu.show();
-            return true;
+            if(!season.getText().toString().equals("") && !episode.getText().toString().equals("")) {
+                PopupMenu popupMenu = new PopupMenu(InfoPage.this, play);
+                popupMenu.getMenuInflater()
+                        .inflate(R.menu.play_menu, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(item -> {
+                    String playitem = item.getTitle().toString();
+                    switch (playitem) {
+                        case "VideoSpider":
+                            playVideoSpider();
+                            return true;
+                        case "GDrivePlayer":
+                            playGDP(imdb);
+                            return true;
+                        case "123Files":
+                            play123();
+                            return true;
+                        case "Free Streaming":
+                            playFS();
+                            break;
+                        default:
+                            playVidSrc(imdb);
+                            return true;
+                    }
+                    return false;
+                });
+                popupMenu.show();
+                return true;
+            }else{
+                Toast.makeText(this, "Please specify the season no. and episode no.", Toast.LENGTH_SHORT).show();
+                return true;
+            }
         });
         torrents.setOnClickListener(v -> {
-            Intent intent = new Intent(InfoPage.this, TorrentStreamer.class);
-            intent.putExtra("title", tet.getText().toString());
-            intent.putExtra("status", status);
-            intent.putExtra("imdb", imdb);
-            intent.putExtra("tmdbid", tmdbid);
-            intent.putExtra("plusmo", bSwitch.isChecked());
-            if (status.equals("TV")) {
-                intent.putExtra("season", season.getText().toString());
-                intent.putExtra("episode", episode.getText().toString());
+            if(!season.getText().toString().equals("") && !episode.getText().toString().equals("")) {
+                Intent intent = new Intent(InfoPage.this, TorrentStreamer.class);
+                intent.putExtra("title", tet.getText().toString());
+                intent.putExtra("status", status);
+                intent.putExtra("imdb", imdb);
+                intent.putExtra("tmdbid", tmdbid);
+                intent.putExtra("plusmo", bSwitch.isChecked());
+                if (status.equals("TV")) {
+                    intent.putExtra("season", season.getText().toString());
+                    intent.putExtra("episode", episode.getText().toString());
+                }
+                InfoPage.this.startActivity(intent);
+            }else{
+                Toast.makeText(this, "Please specify the season no. and episode no.", Toast.LENGTH_SHORT).show();
             }
-            InfoPage.this.startActivity(intent);
         });
     }
 
