@@ -197,14 +197,14 @@ public class InfoPage extends AppCompatActivity {
 
     private void enableButtons() {
         play.setOnClickListener(v -> {
-            if(!season.getText().toString().equals("") && !episode.getText().toString().equals("")) {
+            if ((!season.getText().toString().equals("") && !episode.getText().toString().equals("")) || status.equals("Movie")) {
                 playVidSrc(imdb);
             }else{
                 Toast.makeText(this, "Please specify the season no. and episode no.", Toast.LENGTH_SHORT).show();
             }
         });
         play.setOnLongClickListener(v -> {
-            if(!season.getText().toString().equals("") && !episode.getText().toString().equals("")) {
+            if ((!season.getText().toString().equals("") && !episode.getText().toString().equals("")) || status.equals("Movie")) {
                 PopupMenu popupMenu = new PopupMenu(InfoPage.this, play);
                 popupMenu.getMenuInflater()
                         .inflate(R.menu.play_menu, popupMenu.getMenu());
@@ -237,7 +237,7 @@ public class InfoPage extends AppCompatActivity {
             }
         });
         torrents.setOnClickListener(v -> {
-            if(!season.getText().toString().equals("") && !episode.getText().toString().equals("")) {
+            if ((!season.getText().toString().equals("") && !episode.getText().toString().equals("")) || status.equals("Movie")) {
                 Intent intent = new Intent(InfoPage.this, TorrentStreamer.class);
                 intent.putExtra("title", tet.getText().toString());
                 intent.putExtra("status", status);
