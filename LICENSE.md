@@ -631,7 +631,7 @@ to attach them to the start of each source file to most effectively
 state the exclusion of warranty; and each file should have at least
 the "copyright" line and a pointer to where the full notice is found.
 
-    Xedin is an Android application that gives users ease of us to access certain websites and/or can stream torrent files.
+    Xedin is an Android application that 'streams' media from video scrawling websites and streams BitTorrent media files
     Copyright (C) 2020  Mustafa Shakir (RtiM0)
 
     This program is free software: you can redistribute it and/or modify
