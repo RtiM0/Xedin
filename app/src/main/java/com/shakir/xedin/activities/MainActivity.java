@@ -63,14 +63,20 @@ public class MainActivity extends AppCompatActivity {
             actionbar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#10101a")));
         }
         getWindow().setNavigationBarColor(Color.parseColor("#10101a"));
-        Intent intro = new Intent(this, IntroActivity.class);
-        startActivity(intro);
         ChangelogBuilder builder = new ChangelogBuilder()
                 .withTitle("Xedin Changelog")
                 .withOkButtonLabel("Yeah Yeah")
-                .withUseBulletList(true)
-                .withManagedShowOnStart(true);
-        builder.buildAndShowDialog(this, true);
+                .withUseBulletList(true);
+        boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+                .getBoolean("isFirstRun", true);
+        if (isFirstRun) {
+            Intent intro = new Intent(this, IntroActivity.class);
+            startActivity(intro);
+        }
+        getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
+                .putBoolean("isFirstRun", false).apply();
+        builder.withManagedShowOnStart(true).buildAndShowDialog(this, true);
+
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
