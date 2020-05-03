@@ -1,8 +1,12 @@
 package com.shakir.xedin.interfaces;
 
 import com.shakir.xedin.models.MediaDetail;
+import com.shakir.xedin.models.TPBGET;
+import com.shakir.xedin.models.YTSGET;
 import com.shakir.xedin.utils.MovieResult;
 import com.shakir.xedin.utils.TVSeason;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -28,5 +32,11 @@ public interface TMDBApiService {
 
     @GET
     Call<MediaDetail> getDetail(@Url String url);
+
+    @GET
+    Call<YTSGET> getYTS(@Url String path);
+
+    @GET
+    Call<List<TPBGET>> getTPB(@Url String path);
 }
 

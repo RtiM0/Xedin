@@ -26,27 +26,29 @@ import com.github.se_bastiaan.torrentstream.Torrent;
 import com.github.se_bastiaan.torrentstream.TorrentOptions;
 import com.github.se_bastiaan.torrentstream.TorrentStream;
 import com.github.se_bastiaan.torrentstream.listeners.TorrentListener;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.koushikdutta.ion.Ion;
 import com.shakir.xedin.R;
+import com.shakir.xedin.interfaces.TMDBApiService;
+import com.shakir.xedin.models.TPBGET;
+import com.shakir.xedin.models.YTSGET;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.Random;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 @SuppressLint("SetTextI18n")
 public class TorrentStreamer extends AppCompatActivity implements TorrentListener {
 
     private static final String TORRENT = "Torrent";
-    private static final String TPB_URL = "https://piratebayztemzmv.onion.ly";
     private Button button;
     private TorrentStream torrentStream;
     private ListView torrentsList;
@@ -58,7 +60,6 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
     private String streamUrl = "";
     private String stat;
     private Boolean plus;
-    private JsonArray yts = null;
     private int ready = 0;
     private ArrayList<String> names = new ArrayList<>();
     private ArrayList<String> mags = new ArrayList<>();
@@ -90,7 +91,7 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
 
         if (!stat.equals("TV")) {
             searchYTS(imdb);
-            searchTPB(TPB_URL + "/s/?q=" + title);
+            searchTPB("?q=" + title);
         } else {
             sub.setVisibility(View.VISIBLE);
             String season = getIntent().getStringExtra("season");
@@ -102,7 +103,7 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
             int e = Integer.parseInt(episode);
             if (plus) {
                 add = add + " season " + s;
-                searchTPB(TPB_URL + "/s/?q=" + add);
+                searchTPB("?q=" + add);
             } else {
                 if (s < 10) {
                     add = add + " s0" + s;
@@ -114,7 +115,7 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
                 } else {
                     add = add + "e" + e;
                 }
-                searchTPB(TPB_URL + "/s/?q=" + add);
+                searchTPB("?q=" + add);
             }
         }
 
@@ -161,54 +162,54 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
     }
 
     private void searchYTS(String imdb) {
-        String q = "https://yts.mx/api/v2/list_movies.json?query_term=" + imdb + "&limit=1";
-        Ion.with(this)
-                .load(q)
-                .asJsonObject()
-                .setCallback((e, result) -> {
-                    try {
-                        JsonObject r = result.getAsJsonObject("data");
-                        JsonArray p = r.getAsJsonArray("movies");
-                        if (p != null) {
-                            JsonObject a = (JsonObject) p.get(0);
-                            yts = a.getAsJsonArray("torrents");
-                            JsonObject tor;
-                            for (int i = 0; i < yts.size(); i++) {
-                                tor = (JsonObject) yts.get(i);
-                                names.add("YTS " + tor.get("quality").getAsString() + " " + tor.get("type").getAsString() + "\n[SEEDS:" + tor.get("seeds").getAsInt() + " SIZE:" + tor.get("size").getAsString() + "]");
-                            }
-                            listviewbuilder();
-                        }
-                    } catch (NullPointerException e1) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://yts.mx/api/v2/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        TMDBApiService apiService = retrofit.create(TMDBApiService.class);
+        apiService.getYTS("https://yts.mx/api/v2/list_movies.json?query_term=" + imdb + "&limit=1")
+                .enqueue(new Callback<YTSGET>() {
+                    @Override
+                    public void onResponse(Call<YTSGET> call, Response<YTSGET> response) {
+                        YTSGET ytsget = response.body();
+                        Collections.addAll(names, ytsget.getTitle());
+                        Collections.addAll(mags, ytsget.getMagnets());
+                        listviewbuilder();
+                    }
+
+                    @Override
+                    public void onFailure(Call<YTSGET> call, Throwable t) {
+                        t.printStackTrace();
                         Toast.makeText(getApplicationContext(), "YTS not available", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void searchTPB(String url) {
-        new Thread(() -> {
-            try {
-                Document doc = Jsoup.connect(url).get();
-                Element data = doc.getElementById("searchResult");
-                Elements titles = data.getElementsByClass("detName");
-                Elements magnets = data.removeClass("detName").select("a[href]");
-                int i = 0;
-                for (Element title : titles) {
-                    names.add(title.text());
-                }
-                for (Element magnet : magnets) {
-                    if (magnet.attr("href").contains("magnet") && i < 30) {
-                        mags.add(magnet.attr("href"));
-                        i++;
-                    } else if (i >= 30) {
-                        break;
+    private void searchTPB(String addon) {
+        String[] apis = {"https://api.thepiratebay.workers.dev", "https://api.tpb.workers.dev", "https://api.apibay.workers.dev"};
+        String server = apis[new Random().nextInt(apis.length)];
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://apibay.gq/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        TMDBApiService apiService = retrofit.create(TMDBApiService.class);
+        apiService.getTPB(server + "/q.php" + addon)
+                .enqueue(new Callback<List<TPBGET>>() {
+                    @Override
+                    public void onResponse(Call<List<TPBGET>> call, Response<List<TPBGET>> response) {
+                        for (TPBGET torrent : response.body()) {
+                            names.add(torrent.getTitle());
+                            mags.add(torrent.getMagnet());
+                        }
+                        listviewbuilder();
                     }
-                }
-            } catch (IOException | NullPointerException e) {
-                Log.d("run: ", Objects.requireNonNull(e.getMessage()));
-            }
-            runOnUiThread(this::listviewbuilder);
-        }).start();
+
+                    @Override
+                    public void onFailure(Call<List<TPBGET>> call, Throwable t) {
+                        t.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "Failed to load TPB", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void listviewbuilder() {
@@ -216,26 +217,7 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
         torrentsList.setAdapter(mArrayAdapter);
         torrentsList.setVisibility(View.VISIBLE);
         torrentsList.setOnItemClickListener((parent, view, position, id) -> {
-            if (yts != null) {
-                if (position < yts.size()) {
-                    JsonObject yib = (JsonObject) yts.get(position);
-                    streamUrl = "magnet:?xt=urn:btih:" + yib.get("hash").getAsString() + "&dn=" + "Xedin+loader" +
-                            "&tr=http://track.one:1234/announce" +
-                            "&tr=udp://track.two:80" +
-                            "&tr=udp://open.demonii.com:1337/announce" +
-                            "&tr=udp://tracker.openbittorrent.com:80" +
-                            "&tr=udp://tracker.coppersurfer.tk:6969" +
-                            "&tr=udp://glotorrents.pw:6969/announce" +
-                            "&tr=udp://tracker.opentrackr.org:1337/announce" +
-                            "&tr=udp://torrent.gresille.org:80/announce" +
-                            "&tr=udp://p4p.arenabg.com:1337" +
-                            "&tr=udp://tracker.leechers-paradise.org:6969";
-                } else {
-                    streamUrl = mags.get(position - yts.size());
-                }
-            } else {
-                streamUrl = mags.get(position);
-            }
+            streamUrl = mags.get(position);
             Log.d("Magnet", streamUrl);
             torrentsList.setVisibility(View.GONE);
             infobox.setVisibility(View.VISIBLE);
