@@ -55,19 +55,21 @@ public class Search extends Fragment {
         });
         searcher.setOnClickListener(v12 -> {
             String query = searcher.getText().toString();
-            MakeRestRequest makeRestRequest;
-            List<Movie> movies = new ArrayList<>();
-            for (int i = 0; i < 25; i++) {
-                movies.add(new Movie());
+            if(!query.equals("")) {
+                MakeRestRequest makeRestRequest;
+                List<Movie> movies = new ArrayList<>();
+                for (int i = 0; i < 25; i++) {
+                    movies.add(new Movie());
+                }
+                mAdapter.setMovieList(movies);
+                if (mode == 0) {
+                    makeRestRequest = new MakeRestRequest("Movie", query, mAdapter);
+                } else {
+                    makeRestRequest = new MakeRestRequest("TV", query, mAdapter);
+                }
+                makeRestRequest.makeRequest();
+                mRecyclerView.setVisibility(View.VISIBLE);
             }
-            mAdapter.setMovieList(movies);
-            if (mode == 0) {
-                makeRestRequest = new MakeRestRequest("Movie", query, mAdapter);
-            } else {
-                makeRestRequest = new MakeRestRequest("TV", query, mAdapter);
-            }
-            makeRestRequest.makeRequest();
-            mRecyclerView.setVisibility(View.VISIBLE);
         });
         return v;
     }

@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:gravity="center"
-        android:text="TITLE"
+        android:text="Streaming"
         android:textAppearance="@android:style/TextAppearance.Large"
         android:textColor="@android:color/white"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,7 +25,6 @@
         android:gravity="center"
         android:textAppearance="@android:style/TextAppearance.Small"
         android:textColor="@android:color/white"
-        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/titler" />
 
     <ListView
@@ -42,7 +41,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:orientation="vertical"
-        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"

@@ -1,6 +1,20 @@
 <changelog>
     <release
         date="05/20"
+        versionCode="10"
+        versionName="v0.9.9">
+        <new>Search for Torrents moved to InfoPage</new>
+        <new>Minor UI improvements across the app</new>
+        <bugfix>Empty search query force closes the app</bugfix>
+    </release>
+    <release
+        date="05/20"
+        versionCode="8"
+        versionName="v0.9.7.5">
+    <info>XDA RELEASE</info>
+    </release>
+    <release
+        date="05/20"
         versionCode="8"
         versionName="v0.9.7.1">
         <bugfix>Optimize how app handles and fetches magnet links</bugfix>

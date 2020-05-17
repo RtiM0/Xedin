@@ -19,39 +19,49 @@ public class YTSGET {
         this.data = data;
     }
 
-    public String[] getTitle() {
-        int size = getData().getMovies().get(0).getTorrents().size();
-        ArrayList<String> arrayList = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            YTSGET.data.movies.torrents torrent = getData().getMovies().get(0).getTorrents().get(i);
-            String title = "YTS " + torrent.getQuality() + " " + torrent.getType() + "\n[SEEDS:" + torrent.getSeeds() + " SIZE:" + torrent.getSize() + "]";
-            arrayList.add(title);
+    public String[] getTitle() throws NullPointerException {
+        String[] a;
+        try {
+            int size = getData().getMovies().get(0).getTorrents().size();
+            ArrayList<String> arrayList = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                YTSGET.data.movies.torrents torrent = getData().getMovies().get(0).getTorrents().get(i);
+                String title = "YTS " + torrent.getQuality() + " " + torrent.getType() + "\nSEEDS:" + torrent.getSeeds() + " SIZE:" + torrent.getSize();
+                arrayList.add(title);
+            }
+            a = new String[size];
+            a = arrayList.toArray(a);
+        } catch (Exception e){
+            a = new String[]{};
         }
-        String[] a = new String[size];
-        a = arrayList.toArray(a);
         return a;
     }
 
-    public String[] getMagnets() {
-        int size = getData().getMovies().get(0).getTorrents().size();
-        ArrayList<String> arrayList = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            YTSGET.data.movies.torrents torrent = getData().getMovies().get(0).getTorrents().get(i);
-            String magnet = "magnet:?xt=urn:btih:" + torrent.getHash() + "&dn=" + "[YTS] Xedin+loader" +
-                    "&tr=http://track.one:1234/announce" +
-                    "&tr=udp://track.two:80" +
-                    "&tr=udp://open.demonii.com:1337/announce" +
-                    "&tr=udp://tracker.openbittorrent.com:80" +
-                    "&tr=udp://tracker.coppersurfer.tk:6969" +
-                    "&tr=udp://glotorrents.pw:6969/announce" +
-                    "&tr=udp://tracker.opentrackr.org:1337/announce" +
-                    "&tr=udp://torrent.gresille.org:80/announce" +
-                    "&tr=udp://p4p.arenabg.com:1337" +
-                    "&tr=udp://tracker.leechers-paradise.org:6969";
-            arrayList.add(magnet);
+    public String[] getMagnets() throws NullPointerException {
+        String[] a;
+        try {
+            int size = getData().getMovies().get(0).getTorrents().size();
+            ArrayList<String> arrayList = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                YTSGET.data.movies.torrents torrent = getData().getMovies().get(0).getTorrents().get(i);
+                String magnet = "magnet:?xt=urn:btih:" + torrent.getHash() + "&dn=" + "[YTS] Xedin+loader" +
+                        "&tr=http://track.one:1234/announce" +
+                        "&tr=udp://track.two:80" +
+                        "&tr=udp://open.demonii.com:1337/announce" +
+                        "&tr=udp://tracker.openbittorrent.com:80" +
+                        "&tr=udp://tracker.coppersurfer.tk:6969" +
+                        "&tr=udp://glotorrents.pw:6969/announce" +
+                        "&tr=udp://tracker.opentrackr.org:1337/announce" +
+                        "&tr=udp://torrent.gresille.org:80/announce" +
+                        "&tr=udp://p4p.arenabg.com:1337" +
+                        "&tr=udp://tracker.leechers-paradise.org:6969";
+                arrayList.add(magnet);
+            }
+            a = new String[size];
+            a = arrayList.toArray(a);
+        } catch (Exception e){
+            a = new String[]{};
         }
-        String[] a = new String[size];
-        a = arrayList.toArray(a);
         return a;
     }
 

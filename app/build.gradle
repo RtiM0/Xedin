@@ -10,8 +10,8 @@ android {
         applicationId "com.shakir.xedin"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 8
-        versionName "0.9.7.1"
+        versionCode 10
+        versionName "0.9.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "API_KEY", localProperties['apiKey']
         buildConfigField "String", "SPIDER_KEY", localProperties['spiderKey']
@@ -52,6 +52,5 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    implementation 'com.github.medyo:android-about-page:1.2.5'
 
 }

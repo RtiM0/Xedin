@@ -71,7 +71,7 @@ public class TPBGET {
     }
 
     public String getTitle() {
-        String n = getName() + "\n[SEEDS:" + getSeeds() + " SIZE:" + getSize() + "]";
+        String n = getName() + "\nSEEDS:" + getSeeds() + " SIZE:" + getSize();
         return n;
     }
 }

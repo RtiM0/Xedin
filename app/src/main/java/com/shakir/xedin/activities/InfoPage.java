@@ -1,6 +1,7 @@
 package com.shakir.xedin.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -8,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
@@ -26,14 +28,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.palette.graphics.Palette;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.shakir.xedin.BuildConfig;
 import com.shakir.xedin.R;
+import com.shakir.xedin.adapters.TorrentAdapter;
 import com.shakir.xedin.fragments.episodesFragment;
 import com.shakir.xedin.interfaces.TMDBApiService;
 import com.shakir.xedin.models.MediaDetail;
+import com.shakir.xedin.models.TPBGET;
+import com.shakir.xedin.models.YTSGET;
 import com.shakir.xedin.utils.FullScreenClient;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
+import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -238,21 +249,96 @@ public class InfoPage extends AppCompatActivity {
         });
         torrents.setOnClickListener(v -> {
             if ((!season.getText().toString().equals("") && !episode.getText().toString().equals("")) || status.equals("Movie")) {
-                Intent intent = new Intent(InfoPage.this, TorrentStreamer.class);
-                intent.putExtra("title", tet.getText().toString());
-                intent.putExtra("status", status);
-                intent.putExtra("imdb", imdb);
-                intent.putExtra("tmdbid", tmdbid);
-                intent.putExtra("plusmo", bSwitch.isChecked());
-                if (status.equals("TV")) {
-                    intent.putExtra("season", season.getText().toString());
-                    intent.putExtra("episode", episode.getText().toString());
-                }
-                InfoPage.this.startActivity(intent);
+                torrent();
             }else{
                 Toast.makeText(this, "Please specify the season no. and episode no.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void torrent(){
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View torrentResult = inflater.inflate(R.layout.custom_torrent_results,null);
+        RecyclerView tpbResult = torrentResult.findViewById(R.id.TPBResults);
+        tpbResult.setLayoutManager(new LinearLayoutManager(this));
+        TorrentAdapter TPBAdapter = new TorrentAdapter(getApplicationContext(), "TPB");
+        tpbResult.setAdapter(TPBAdapter);
+        String[] apis = {"https://api.thepiratebay.workers.dev", "https://api.tpb.workers.dev", "https://api.apibay.workers.dev"};
+        String server = apis[new Random().nextInt(apis.length)];
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://yts.mx/api/v2/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        TMDBApiService apiService = retrofit.create(TMDBApiService.class);
+        if(status.equals("Movie")) {
+            RecyclerView ytsResult = torrentResult.findViewById(R.id.YTSResults);
+            ytsResult.setLayoutManager(new LinearLayoutManager(this));
+            TorrentAdapter YTSAdapter = new TorrentAdapter(getApplicationContext(),"YTS");
+            ytsResult.setAdapter(YTSAdapter);
+            apiService.getYTS("https://yts.mx/api/v2/list_movies.json?query_term=" + imdb + "&limit=1")
+                    .enqueue(new Callback<YTSGET>() {
+                        @Override
+                        public void onResponse(Call<YTSGET> call, Response<YTSGET> response) {
+                            YTSGET ytsget = response.body();
+                            YTSAdapter.setResults(ytsget);
+                            if(ytsget.getTitle().length>0) {
+                                torrentResult.findViewById(R.id.ytshead).setVisibility(View.VISIBLE);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<YTSGET> call, Throwable t) {
+                            t.printStackTrace();
+                            Toast.makeText(getApplicationContext(), "YTS not available", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+        String addon = "";
+        if(!status.equals("TV")){
+            addon = "?q=" + tet.getText().toString();
+        }else{
+            String season = this.season.getText().toString();
+            String episode = this.episode.getText().toString();
+            String add = tet.getText().toString();
+            int s = Integer.parseInt(season);
+            int e = Integer.parseInt(episode);
+            if (bSwitch.isChecked()) {
+                add = add + " season " + s;
+                addon = "?q=" + add;
+            } else {
+                if (s < 10) {
+                    add = add + " s0" + s;
+                } else {
+                    add = add + " s" + s;
+                }
+                if (e < 10) {
+                    add = add + "e0" + e;
+                } else {
+                    add = add + "e" + e;
+                }
+                addon = "?q=" + add;
+            }
+        }
+        apiService.getTPB(server + "/q.php" + addon)
+                .enqueue(new Callback<List<TPBGET>>() {
+                    @Override
+                    public void onResponse(Call<List<TPBGET>> call, Response<List<TPBGET>> response) {
+                        List<TPBGET> data = response.body();
+                        TPBAdapter.setResults(data);
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<TPBGET>> call, Throwable t) {
+                        t.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "Failed to load TPB", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        BottomDialog bottomDialog = new BottomDialog.Builder(this)
+                .setTitle("Torrent Results")
+                .setCustomView(torrentResult)
+                .build();
+        bottomDialog.show();
     }
 
     private void playGDP(String imdb) {

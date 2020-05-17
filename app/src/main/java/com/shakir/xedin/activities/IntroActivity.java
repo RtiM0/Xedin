@@ -36,11 +36,11 @@ public class IntroActivity extends AppIntro {
         sliderPage.setImageDrawable(R.drawable.torrent);
         addSlide(AppIntroFragment.newInstance(sliderPage));
 
-        sliderPage.setBgColor(Color.parseColor("#FF0000"));
-        sliderPage.setTitle("Disclaimer");
-        sliderPage.setDescription("I do not encourage the use of pirated media and no not influence or indulge oneself in doing so, this app is to be only treated as a utility and should not be mass distributed.");
-        sliderPage.setImageDrawable(Color.TRANSPARENT);
-        addSlide(AppIntroFragment.newInstance(sliderPage));
+//        sliderPage.setBgColor(Color.parseColor("#FF0000"));
+//        sliderPage.setTitle("Disclaimer");
+//        sliderPage.setDescription("I do not encourage the use of pirated media and no not influence or indulge oneself in doing so, this app is to be only treated as a utility and should not be mass distributed.");
+//        sliderPage.setImageDrawable(Color.TRANSPARENT);
+//        addSlide(AppIntroFragment.newInstance(sliderPage));
 
         setZoomAnimation();
     }

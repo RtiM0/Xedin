@@ -37,13 +37,14 @@
                 <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
                     android:layout_weight="1">
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        app:cardUseCompatPadding="true"
                         android:elevation="4dp"
+                        app:cardCornerRadius="4dp"
                         app:cardBackgroundColor="#0000">
 
                         <ImageView
@@ -112,6 +113,7 @@
                         android:layout_margin="4dp"
                         android:layout_toEndOf="@id/playbutton"
                         android:checked="true"
+                        android:visibility="invisible"
                         android:text="iFrame"
                         android:textAppearance="@android:style/TextAppearance.Small"
                         android:textColor="@android:color/white"

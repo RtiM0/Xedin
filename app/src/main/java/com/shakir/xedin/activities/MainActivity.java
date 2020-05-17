@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,7 +14,6 @@ import androidx.fragment.app.FragmentManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.michaelflisar.changelog.ChangelogBuilder;
 import com.shakir.xedin.R;
-import com.shakir.xedin.fragments.AboutFragment;
 import com.shakir.xedin.fragments.PopularMovies;
 import com.shakir.xedin.fragments.PopularTV;
 import com.shakir.xedin.fragments.Search;
@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
     final Fragment fragment1 = new PopularMovies();
     final Fragment fragment2 = new PopularTV();
     final Fragment fragment3 = new Search();
-    final Fragment fragment4 = new AboutFragment();
     final FragmentManager fm = getSupportFragmentManager();
     Fragment active = fragment1;
 
@@ -43,8 +42,7 @@ public class MainActivity extends AppCompatActivity {
                 active = fragment3;
                 return true;
             case R.id.navigation_about:
-                fm.beginTransaction().hide(active).show(fragment4).commit();
-                active = fragment4;
+                Toast.makeText(this, "Disabled for XDA Release; Made with <3 by RtiM0", Toast.LENGTH_SHORT).show();
                 return true;
         }
         return false;
@@ -80,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        fm.beginTransaction().add(R.id.main_container, fragment4, "4").hide(fragment4).commit();
         fm.beginTransaction().add(R.id.main_container, fragment3, "3").hide(fragment3).commit();
         fm.beginTransaction().add(R.id.main_container, fragment2, "2").hide(fragment2).commit();
         fm.beginTransaction().add(R.id.main_container, fragment1, "1").commit();
