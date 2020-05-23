@@ -1,11 +1,13 @@
 package com.shakir.xedin.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.shakir.xedin.R;
@@ -52,7 +54,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MovieViewHolder> {
             intent.putExtra("desc", desc);
             intent.putExtra("tmdbid", tmdbid);
             intent.putExtra("tvname", tvname);
-            mContext.startActivity(intent);
+            ActivityOptionsCompat options = ActivityOptionsCompat.
+                    makeSceneTransitionAnimation((Activity) mContext, holder.cardView, "poster");
+            mContext.startActivity(intent, options.toBundle());
         });
         // This is how we use Picasso to load images from the internet.
         Picasso.get()

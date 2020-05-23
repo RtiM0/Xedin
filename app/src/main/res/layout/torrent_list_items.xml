@@ -2,14 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textV"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:gravity="center"
-        android:textAppearance="@android:style/TextAppearance.Medium"
-        android:textColor="@android:color/white" />
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true">
+
+        <TextView
+            android:id="@+id/textV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="Loading"
+            android:textAlignment="center"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:textColor="@android:color/black" />
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

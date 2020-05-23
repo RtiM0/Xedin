@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_xed"
@@ -16,6 +17,7 @@
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".activities.WebScrap" />
         <activity android:name=".activities.IntroActivity" />
         <activity
             android:name=".activities.SplashActivity"
@@ -36,4 +38,5 @@
             android:theme="@style/AppTheme" />
         <activity android:name=".activities.TorrentStreamer" />
     </application>
+
 </manifest>

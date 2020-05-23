@@ -15,5 +15,8 @@
     <item
         android:id="@+id/fs"
         android:title="Free Streaming" />
+    <item
+        android:id="@+id/direct"
+        android:title="Direct" />
 
 </menu>

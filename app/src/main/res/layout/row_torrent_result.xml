@@ -15,7 +15,6 @@
             android:id="@+id/torrentName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
             android:text="Loading"
             android:textStyle="bold"
             android:textAppearance="@android:style/TextAppearance.Small"

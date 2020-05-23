@@ -1,7 +1,6 @@
 package com.shakir.xedin.activities;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -54,18 +53,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class InfoPage extends AppCompatActivity {
 
+    public EditText season;
+    public EditText episode;
+    public Button torrents;
     private ConstraintLayout parental;
     private TextView tet;
     private TextView disc;
     private Button play;
-    public EditText season;
-    public EditText episode;
     private String status;
     private WebView webView;
     private int tmdbid;
     private String imdb;
+    private String name;
     private Switch aSwitch;
-    public Button torrents;
     private int immersive = 0;
     private Switch bSwitch;
     private int detailColor = 0;
@@ -76,10 +76,11 @@ public class InfoPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         String title = intent.getStringExtra("title");
-        String name = intent.getStringExtra("tvname");
+        name = intent.getStringExtra("tvname");
         String desc = intent.getStringExtra("desc");
         tmdbid = intent.getIntExtra("tmdbid", -1);
         String poster = intent.getStringExtra("poster");
+        String back = intent.getStringExtra("backdrop");
         setContentView(R.layout.activity_info_page);
         tet = findViewById(R.id.titel);
         disc = findViewById(R.id.description);
@@ -107,7 +108,7 @@ public class InfoPage extends AppCompatActivity {
         ImageView posta = findViewById(R.id.posta);
         Picasso.get()
                 .load(poster)
-                .placeholder(R.color.colorAccent)
+                .placeholder(R.drawable.image_placeholder)
                 .into(posta, new com.squareup.picasso.Callback() {
                     @Override
                     public void onSuccess() {
@@ -119,6 +120,7 @@ public class InfoPage extends AppCompatActivity {
                                         Palette.Swatch darkMutedSwatch = palette.getDarkMutedSwatch();
                                         parental.setBackgroundColor(darkVibrantSwatch.getRgb());
                                         tet.setTextColor(darkVibrantSwatch.getTitleTextColor());
+                                        ((TextView) findViewById(R.id.distitle)).setTextColor(darkVibrantSwatch.getTitleTextColor());
                                         disc.setTextColor(darkVibrantSwatch.getBodyTextColor());
                                         season.setHintTextColor(darkVibrantSwatch.getBodyTextColor());
                                         episode.setHintTextColor(darkVibrantSwatch.getBodyTextColor());
@@ -210,7 +212,7 @@ public class InfoPage extends AppCompatActivity {
         play.setOnClickListener(v -> {
             if ((!season.getText().toString().equals("") && !episode.getText().toString().equals("")) || status.equals("Movie")) {
                 playVidSrc(imdb);
-            }else{
+            } else {
                 Toast.makeText(this, "Please specify the season no. and episode no.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -233,16 +235,26 @@ public class InfoPage extends AppCompatActivity {
                             return true;
                         case "Free Streaming":
                             playFS();
-                            break;
-                        default:
+                            return true;
+                        case "VidSource":
                             playVidSrc(imdb);
                             return true;
+                        default:
+                            if (status.equals("TV")) {
+                                Intent scrap = new Intent(getApplicationContext(), WebScrap.class);
+                                scrap.putExtra("name", name);
+                                scrap.putExtra("season", season.getText().toString());
+                                scrap.putExtra("episode", episode.getText().toString());
+                                startActivity(scrap);
+                            } else {
+                                Toast.makeText(this, "Not Available for Movies", Toast.LENGTH_SHORT).show();
+                            }
+                            return true;
                     }
-                    return false;
                 });
                 popupMenu.show();
                 return true;
-            }else{
+            } else {
                 Toast.makeText(this, "Please specify the season no. and episode no.", Toast.LENGTH_SHORT).show();
                 return true;
             }
@@ -250,19 +262,19 @@ public class InfoPage extends AppCompatActivity {
         torrents.setOnClickListener(v -> {
             if ((!season.getText().toString().equals("") && !episode.getText().toString().equals("")) || status.equals("Movie")) {
                 torrent();
-            }else{
+            } else {
                 Toast.makeText(this, "Please specify the season no. and episode no.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void torrent(){
+    private void torrent() {
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View torrentResult = inflater.inflate(R.layout.custom_torrent_results,null);
+        View torrentResult = inflater.inflate(R.layout.custom_torrent_results, null);
         RecyclerView tpbResult = torrentResult.findViewById(R.id.TPBResults);
         tpbResult.setLayoutManager(new LinearLayoutManager(this));
-        TorrentAdapter TPBAdapter = new TorrentAdapter(getApplicationContext(), "TPB");
-        tpbResult.setAdapter(TPBAdapter);
+        TorrentAdapter tpbAdapter = new TorrentAdapter(getApplicationContext(), "TPB");
+        tpbResult.setAdapter(tpbAdapter);
         String[] apis = {"https://api.thepiratebay.workers.dev", "https://api.tpb.workers.dev", "https://api.apibay.workers.dev"};
         String server = apis[new Random().nextInt(apis.length)];
         Retrofit retrofit = new Retrofit.Builder()
@@ -270,10 +282,10 @@ public class InfoPage extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         TMDBApiService apiService = retrofit.create(TMDBApiService.class);
-        if(status.equals("Movie")) {
+        if (status.equals("Movie")) {
             RecyclerView ytsResult = torrentResult.findViewById(R.id.YTSResults);
             ytsResult.setLayoutManager(new LinearLayoutManager(this));
-            TorrentAdapter YTSAdapter = new TorrentAdapter(getApplicationContext(),"YTS");
+            TorrentAdapter YTSAdapter = new TorrentAdapter(getApplicationContext(), "YTS");
             ytsResult.setAdapter(YTSAdapter);
             apiService.getYTS("https://yts.mx/api/v2/list_movies.json?query_term=" + imdb + "&limit=1")
                     .enqueue(new Callback<YTSGET>() {
@@ -281,7 +293,7 @@ public class InfoPage extends AppCompatActivity {
                         public void onResponse(Call<YTSGET> call, Response<YTSGET> response) {
                             YTSGET ytsget = response.body();
                             YTSAdapter.setResults(ytsget);
-                            if(ytsget.getTitle().length>0) {
+                            if (ytsget.getTitle().length > 0) {
                                 torrentResult.findViewById(R.id.ytshead).setVisibility(View.VISIBLE);
                             }
                         }
@@ -294,9 +306,9 @@ public class InfoPage extends AppCompatActivity {
                     });
         }
         String addon = "";
-        if(!status.equals("TV")){
+        if (!status.equals("TV")) {
             addon = "?q=" + tet.getText().toString();
-        }else{
+        } else {
             String season = this.season.getText().toString();
             String episode = this.episode.getText().toString();
             String add = tet.getText().toString();
@@ -324,7 +336,7 @@ public class InfoPage extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<List<TPBGET>> call, Response<List<TPBGET>> response) {
                         List<TPBGET> data = response.body();
-                        TPBAdapter.setResults(data);
+                        tpbAdapter.setResults(data);
                     }
 
                     @Override

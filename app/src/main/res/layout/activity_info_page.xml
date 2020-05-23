@@ -42,8 +42,9 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:transitionName="poster"
                         app:cardUseCompatPadding="true"
-                        android:elevation="4dp"
+                        app:cardElevation="4dp"
                         app:cardCornerRadius="4dp"
                         app:cardBackgroundColor="#0000">
 
@@ -139,9 +140,9 @@
                 android:id="@+id/distitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
+                android:layout_margin="8dp"
                 android:text="Overview"
-                android:textAppearance="@android:style/TextAppearance.Medium"
+                android:textAppearance="@android:style/TextAppearance.Large"
                 android:textColor="@android:color/white"
                 android:textStyle="bold" />
 
@@ -150,6 +151,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
+                android:textStyle="bold"
                 android:textAppearance="@android:style/TextAppearance.Small"
                 android:textColor="@android:color/white" />
 
