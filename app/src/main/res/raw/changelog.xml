@@ -1,10 +1,11 @@
 <changelog>
     <release
         date="05/20"
-        versionCode="10"
-        versionName="v0.9.9">
+        versionCode="11"
+        versionName="v1.1">
         <new>Search for Torrents moved to InfoPage</new>
-        <new>Minor UI improvements across the app</new>
+        <new>Add direct streaming sources</new>
+        <new>Major UI improvements across the app</new>
         <bugfix>Empty search query force closes the app</bugfix>
     </release>
     <release

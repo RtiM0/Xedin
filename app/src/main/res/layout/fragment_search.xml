@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#363640"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorPrimary"
     tools:context=".fragments.Search">
 
     <LinearLayout
@@ -11,35 +12,43 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/search"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:background="#60606b"
-            android:orientation="horizontal"
             android:padding="8dp"
-            android:weightSum="10">
+            android:weightSum="10"
+            app:cardBackgroundColor="#60606b"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true">
 
-            <EditText
-                android:id="@+id/searcher"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/search"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="8"
-                android:background="@android:color/transparent"
-                android:hint="Movie Name"
-                android:inputType="textAutoComplete"
-                android:textColor="#ffffff" />
+                android:padding="8dp"
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/switcher"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:background="#10101a"
-                android:text="TV"
-                android:textColor="#ffffff" />
-        </LinearLayout>
+                <EditText
+                    android:id="@+id/searcher"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="8"
+                    android:background="@android:color/transparent"
+                    android:hint="Movie Name"
+                    android:inputType="textAutoComplete"
+                    android:textColor="#ffffff" />
+
+                <Button
+                    android:id="@+id/switcher"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:background="#10101a"
+                    android:text="TV"
+                    android:textColor="#ffffff" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/searchRecycler"

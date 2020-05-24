@@ -21,8 +21,6 @@ import com.shakir.xedin.interfaces.TMDBApiService;
 import com.shakir.xedin.models.TVEpisode;
 import com.shakir.xedin.utils.TVSeason;
 
-import org.jetbrains.annotations.NotNull;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -77,14 +75,14 @@ public class episodesFragment extends Fragment implements EpisodesAdapter.EventL
                     TMDBApiService service = retrofit.create(TMDBApiService.class);
                     service.getEpisodes(tmdbid, position + 1, BuildConfig.API_KEY).enqueue(new Callback<TVSeason>() {
                         @Override
-                        public void onResponse(@NotNull Call<TVSeason> call, @NotNull Response<TVSeason> response) {
+                        public void onResponse(Call<TVSeason> call, Response<TVSeason> response) {
                             TVSeason tvSeason = response.body();
                             assert tvSeason != null;
                             episodesAdapter.setEpisodeList(tvSeason.getEpisodes());
                         }
 
                         @Override
-                        public void onFailure(@NotNull Call<TVSeason> call, @NotNull Throwable t) {
+                        public void onFailure(Call<TVSeason> call, Throwable t) {
                             call.clone().enqueue(this);
                             t.printStackTrace();
                         }

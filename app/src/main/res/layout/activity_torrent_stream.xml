@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#363640"
+    android:background="@android:color/black"
     tools:context=".activities.TorrentStreamer">
 
     <TextView
@@ -14,6 +14,7 @@
         android:layout_margin="16dp"
         android:gravity="center"
         android:text="Streaming"
+        android:textStyle="bold"
         android:textAppearance="@android:style/TextAppearance.Large"
         android:textColor="@android:color/white"
         app:layout_constraintTop_toTopOf="parent" />
@@ -33,66 +34,77 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:paddingBottom="50dp"
+        android:divider="@null"
         app:layout_constraintTop_toBottomOf="@+id/sub" />
 
-    <LinearLayout
-        android:id="@+id/infobox"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:orientation="vertical"
+        android:layout_margin="16dp"
+        app:cardBackgroundColor="@color/colorPrimaryDark"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/listof">
 
-        <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
-            android:id="@+id/progressBar"
+        <LinearLayout
+            android:id="@+id/infobox"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_margin="24dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/listof"
-            app:rcBackgroundPadding="5dp"
-            app:rcRadius="10dp" />
-
-        <TextView
-            android:id="@+id/prop"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center"
-            android:text="Please Wait"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@android:color/white" />
-
-        <Button
-            android:id="@+id/streambutton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:layout_margin="8dp"
-            android:text="Start Stream" />
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/plbutton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="8dp"
-            android:text="open player"
-            android:visibility="gone" />
+            <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_margin="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/listof"
+                app:rcBackgroundPadding="5dp"
+                app:rcRadius="10dp" />
 
-        <Button
-            android:id="@+id/magneter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="8dp"
-            android:text="Magnet"
-            android:visibility="gone" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/prop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Please Wait"
+                android:padding="8dp"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="@android:color/white" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/streambutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="8dp"
+                    android:text="Start Stream" />
+
+                <Button
+                    android:id="@+id/plbutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="8dp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:text="open player"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

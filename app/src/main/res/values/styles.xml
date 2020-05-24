@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:navigationBarColor">#10101a</item>
         <item name="android:windowContentTransitions">true</item>
+        <item name="colorSurface">@android:color/white</item>
     </style>
 
     <style name="AppTheme.Fullscreen" parent="AppTheme">

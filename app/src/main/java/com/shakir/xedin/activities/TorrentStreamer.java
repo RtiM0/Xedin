@@ -134,7 +134,6 @@ public class TorrentStreamer extends AppCompatActivity implements TorrentListene
     public void onStreamError(Torrent torrent, Exception e) {
         button.setText("Start stream");
         Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-        Toast.makeText(this, "Try Again Plox", Toast.LENGTH_SHORT).show();
     }
 
     @Override
