@@ -19,11 +19,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <TextView
+        android:id="@+id/tpbhead"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textAppearance="@android:style/TextAppearance.Medium"
-        android:text="ThePirateBay"/>
+        android:text="Loading" />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/TPBResults"
         android:layout_width="match_parent"

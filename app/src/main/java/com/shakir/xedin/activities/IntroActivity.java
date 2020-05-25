@@ -41,6 +41,8 @@ public class IntroActivity extends AppIntro {
 //        sliderPage.setDescription("I do not encourage the use of pirated media and no not influence or indulge oneself in doing so, this app is to be only treated as a utility and should not be mass distributed.");
 //        sliderPage.setImageDrawable(Color.TRANSPARENT);
 //        addSlide(AppIntroFragment.newInstance(sliderPage));
+        setColorSkipButton(Color.parseColor("#000000"));
+        setColorDoneText(Color.parseColor("#000000"));
     }
 
     @Override

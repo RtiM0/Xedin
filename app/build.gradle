@@ -10,8 +10,8 @@ android {
         applicationId "com.shakir.xedin"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 11
-        versionName "1.1"
+        versionCode 9
+        versionName "0.9.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "API_KEY", localProperties['apiKey']
         buildConfigField "String", "SPIDER_KEY", localProperties['spiderKey']
@@ -51,6 +51,9 @@ dependencies {
     implementation 'com.github.AppIntro:AppIntro:6.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'org.jsoup:jsoup:1.13.1'
+    implementation 'com.github.daniel-stoneuk:material-about-library:3.1.2'
+    implementation "com.mikepenz:iconics-core:4.0.2"
+    implementation 'com.mikepenz:community-material-typeface:3.5.95.1-kotlin@aar'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 

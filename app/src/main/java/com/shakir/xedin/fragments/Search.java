@@ -43,14 +43,14 @@ public class Search extends Fragment {
         mRecyclerView.getLayoutManager();
         mRecyclerView.setVisibility(View.GONE);
         switcher.setOnClickListener(v1 -> {
-            if (mode == 0) {
+            if (mode == 1) {
                 switcher.setText("Movies");
-                searcher.setHint("TV shows");
-                mode = 1;
+                searcher.setHint("Enter Movie Name");
+                mode = 0;
             } else {
                 switcher.setText("TV");
-                searcher.setHint("Movies");
-                mode = 0;
+                searcher.setHint("Enter TV Show Name");
+                mode = 1;
             }
         });
         searcher.setOnClickListener(v12 -> {

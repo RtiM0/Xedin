@@ -37,7 +37,7 @@
         android:divider="@null"
         app:layout_constraintTop_toBottomOf="@+id/sub" />
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
@@ -90,6 +90,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorPrimaryDark"
+                    android:backgroundTint="@android:color/white"
                     android:layout_gravity="center_horizontal"
                     android:layout_margin="8dp"
                     android:text="Start Stream" />
@@ -101,10 +102,11 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_margin="8dp"
                     android:textColor="@color/colorPrimaryDark"
+                    android:backgroundTint="@android:color/white"
                     android:text="open player"
                     android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

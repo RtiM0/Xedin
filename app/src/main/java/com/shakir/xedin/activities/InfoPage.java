@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.javiersantos.bottomdialogs.BottomDialog;
+import com.google.android.material.snackbar.Snackbar;
 import com.shakir.xedin.BuildConfig;
 import com.shakir.xedin.R;
 import com.shakir.xedin.adapters.TorrentAdapter;
@@ -158,6 +159,16 @@ public class InfoPage extends AppCompatActivity {
         });
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setUseWideViewPort(true);
+        boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+                .getBoolean("isFirstInfo", true);
+        if (isFirstRun) {
+            Snackbar.make(findViewById(R.id.parental), "Tap and hold Play button for more sources", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("CLOSE", view -> {
+                    })
+                    .show();
+        }
+        getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
+                .putBoolean("isFirstInfo", false).apply();
         getDetails();
     }
 
@@ -211,7 +222,7 @@ public class InfoPage extends AppCompatActivity {
     private void enableButtons() {
         play.setOnClickListener(v -> {
             if ((!season.getText().toString().equals("") && !episode.getText().toString().equals("")) || status.equals("Movie")) {
-                playVidSrc(imdb);
+                playGDP(imdb);
             } else {
                 Toast.makeText(this, "Please specify the season no. and episode no.", Toast.LENGTH_SHORT).show();
             }
@@ -261,7 +272,19 @@ public class InfoPage extends AppCompatActivity {
         });
         torrents.setOnClickListener(v -> {
             if ((!season.getText().toString().equals("") && !episode.getText().toString().equals("")) || status.equals("Movie")) {
-                torrent();
+                boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+                        .getBoolean("isFirstTorrent", true);
+                if (isFirstRun) {
+                    Snackbar.make(findViewById(R.id.parental), "Tap and hold result for magnet link", Snackbar.LENGTH_INDEFINITE)
+                            .setAction("OK, Show Torrents", view -> {
+                                torrent();
+                            })
+                            .show();
+                } else {
+                    torrent();
+                }
+                getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
+                        .putBoolean("isFirstTorrent", false).apply();
             } else {
                 Toast.makeText(this, "Please specify the season no. and episode no.", Toast.LENGTH_SHORT).show();
             }
@@ -337,6 +360,7 @@ public class InfoPage extends AppCompatActivity {
                     public void onResponse(Call<List<TPBGET>> call, Response<List<TPBGET>> response) {
                         List<TPBGET> data = response.body();
                         tpbAdapter.setResults(data);
+                        ((TextView) (torrentResult.findViewById(R.id.tpbhead))).setText("ThePirateBay");
                     }
 
                     @Override

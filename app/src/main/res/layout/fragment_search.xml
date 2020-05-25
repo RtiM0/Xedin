@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
@@ -33,9 +33,9 @@
                     android:id="@+id/searcher"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8"
+                    android:layout_weight="7"
                     android:background="@android:color/transparent"
-                    android:hint="Movie Name"
+                    android:hint="Enter Movie Name"
                     android:inputType="textAutoComplete"
                     android:textColor="#ffffff" />
 
@@ -43,12 +43,12 @@
                     android:id="@+id/switcher"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:background="#10101a"
                     android:text="TV"
                     android:textColor="#ffffff" />
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/searchRecycler"
